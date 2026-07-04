@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LoveSnaps - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#e1e1f5",
+                        "on-secondary-container": "#3b6a6f",
+                        "tertiary-container": "#ffe0e3",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e2e2e9",
+                        "secondary-fixed": "#bbebf1",
+                        "primary-container": "#e6e6fa",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#191b29",
+                        "tertiary-fixed-dim": "#fcb3be",
+                        "on-background": "#191c20",
+                        "background": "#f9f9ff",
+                        "on-surface": "#191c20",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#6b3741",
+                        "surface-dim": "#d9d9e0",
+                        "on-secondary-fixed-variant": "#1d4d53",
+                        "secondary-container": "#b8e8ee",
+                        "on-tertiary-fixed": "#360c17",
+                        "surface-tint": "#5c5d6e",
+                        "surface-container": "#ededf4",
+                        "surface-container-highest": "#e2e2e9",
+                        "outline-variant": "#c7c5cc",
+                        "inverse-on-surface": "#f0f0f7",
+                        "tertiary": "#874e58",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3036",
+                        "secondary": "#37656b",
+                        "primary": "#5c5d6e",
+                        "surface-bright": "#f9f9ff",
+                        "on-tertiary-container": "#915761",
+                        "outline": "#77767d",
+                        "primary-fixed-dim": "#c5c5d8",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9ff",
+                        "tertiary-fixed": "#ffd9de",
+                        "secondary-fixed-dim": "#9fcfd5",
+                        "on-surface-variant": "#46464c",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#444655",
+                        "surface-container-high": "#e7e8ee",
+                        "inverse-primary": "#c5c5d8",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f3fa",
+                        "on-primary-container": "#656677",
+                        "on-secondary-fixed": "#001f23"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "container-padding": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "sm": "12px",
+                        "lg": "40px",
+                        "xl": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Quicksand"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Quicksand"],
+                        "headline-lg-mobile": ["Quicksand"],
+                        "display-lg": ["Quicksand"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #e6e6fa 0%, #f9f9ff 50%, #ffe0e3 100%);
+        }
+        .marshmallow-shadow {
+            box-shadow: 0 32px 64px -12px rgba(230, 230, 250, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        }
+        .bounce-hover:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg flex flex-col font-body-md text-on-background relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute top-10 left-10 w-32 h-32 bg-white/40 rounded-full blur-3xl"></div>
+<div class="absolute bottom-20 right-10 w-48 h-48 bg-primary-container/40 rounded-full blur-3xl"></div>
+<main class="flex-grow flex flex-col items-center justify-center p-container-padding z-10 w-full max-w-md mx-auto">
+<!-- Logo -->
+<div class="mb-xl animate-[bounce_3s_ease-in-out_infinite]">
+<img alt="LoveSnaps Logo" class="w-48 h-auto object-contain drop-shadow-md" src="https://lh3.googleusercontent.com/aida/AP1WRLtIbfua5z2JHveFB4INyucdTuD__0qfsgvj7xTi_HX7FZ6zt4IbsBWtvtUxMaftjHore3PRg7h8bDmJOXQY3pSGtpPIVj7hyRVdOLofm2yl1efGLNZIV8__srs55rEtTbJYc4Ghi4dgt9SUTtG_GsqpwDxSEsBnCK-oSqF0OGnsyWeSxUl2M2f4I0xaSuVBVeVsfTNPyTxlLzvFC55JOodikiciVUeASf__y8QJuhAtqGwLpnB8BwaheAs"/>
+</div>
+<!-- Illustration Canvas -->
+<div class="w-full max-w-sm aspect-square bg-white/60 backdrop-blur-xl rounded-full marshmallow-shadow mb-lg flex items-center justify-center relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary-container/20 to-transparent pointer-events-none"></div>
+<img class="w-[80%] h-[80%] object-contain animate-[pulse_4s_ease-in-out_infinite]" data-alt="Two adorable, chubby chibi hearts holding hands and smiling warmly. One heart is soft blush pink, the other is gentle lavender. They are floating in a cozy, bright white space with subtle glowing sparkles around them. 3D rendered style with plush toy textures, pastel color palette, soft lighting, and high visual appeal for a cute relationship app. Huggable, soft, and inviting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ-TRK7DSr-Q9TOnnPNtG6YhQzMrQwPdoRUwbgWmf3O8xEGygZYUiquHq3t0fS1MT5tcv4zPHvIalyN24CHpK7h5hzK52BSTXYbY500r8fRFAQvDeJ8NKFsJrBR2bp1qhHk2rrPJbE7Ir7GX1wCp7KknJHrlr_f-cJGAcI3zMHpDbYTaOPieYR8pcjAou0xNhpyVHYRhKEynzjv9iCmuduCg3gVfd9tcXa6p2HpMq3Vl-JaRCnN7B4"/>
+</div>
+<!-- Copy & Action -->
+<div class="text-center w-full mt-sm">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-sm tracking-tight">Let's get you two connected <span class="inline-block animate-[spin_4s_linear_infinite]">💫</span></h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg opacity-80">Create a cozy space for just the two of you to share moments, memories, and little surprises.</p>
+<button class="w-full bg-tertiary-container hover:bg-tertiary-fixed-dim text-on-tertiary-container font-headline-md text-headline-md py-4 px-8 rounded-full bounce-hover transition-all duration-300 relative overflow-hidden group shadow-[0_8px_16px_rgba(255,224,227,0.6)]">
+<span class="relative z-10 flex items-center justify-center gap-2">
+                    Get Started
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</span>
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+</button>
+<p class="mt-md font-label-sm text-label-sm text-on-surface-variant/60">
+                Already have an account? <a class="text-primary font-bold hover:underline" href="#">Log in</a>
+</p>
+</div>
+</main>
+</body></html>
