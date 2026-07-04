@@ -1,4 +1,4 @@
-﻿name: 🚀 Build LoveSnaps APK
+name: 🚀 Build LoveSnaps APK
 
 on:
   push:
@@ -25,7 +25,6 @@ jobs:
       - name: 🐦 Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.0'
           channel: 'stable'
           cache: true
 
@@ -44,7 +43,7 @@ jobs:
                 "client_info": {
                   "mobilesdk_app_id": "1:1062036834408:android:477c617019e5d11b5c13dd",
                   "android_client_info": {
-                    "package_name": "com.example.lovesnaps"
+                    "package_name": "com.lovesnaps.app"
                   }
                 },
                 "oauth_client": [],

@@ -18,7 +18,7 @@ dependencies:
   firebase_analytics: ^10.8.0
 
   # Home Screen Widgets
-  home_widget: ^0.9.3
+  home_widget: ^0.8.1
   workmanager: ^0.5.2
 
   # Location
