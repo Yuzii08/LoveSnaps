@@ -12,6 +12,7 @@ import '../../services/streak_service.dart';
 import '../../services/location_service.dart';
 import '../../services/widget_service.dart';
 import '../../services/update_service.dart';
+import '../../services/notification_service.dart';
 import 'jam_screen.dart';
 import '../../widgets/days_card.dart';
 import '../../widgets/streak_card.dart';
@@ -42,6 +43,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UpdateService.checkForUpdates(context);
+      ref.read(notificationServiceProvider).initialize();
     });
   }
 
