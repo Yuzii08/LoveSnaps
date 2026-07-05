@@ -192,12 +192,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.favorite_rounded, color: LoveSnapsColors.primary),
-                              onPressed: () {},
+                              icon: const Icon(Icons.chat_bubble_rounded, color: LoveSnapsColors.primary),
+                              onPressed: () => context.push('/home/chat'),
                             ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
                               duration: 2.seconds,
                               begin: const Offset(1.0, 1.0),
-                              end: const Offset(1.1, 1.1),
+                              end: const Offset(1.05, 1.05),
                             ),
                           ],
                         ),

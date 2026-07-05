@@ -10,6 +10,7 @@ import 'screens/onboarding/start_date_screen.dart';
 import 'screens/onboarding/permissions_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/home/settings_screen.dart';
+import 'screens/home/chat_screen.dart';
 import 'services/auth_service.dart';
 
 // ── Router ─────────────────────────────────────────────────────────────────
@@ -48,6 +49,10 @@ final _router = GoRouter(
         GoRoute(
           path: 'settings',
           builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: 'chat',
+          builder: (context, state) => const ChatScreen(),
         ),
       ],
     ),

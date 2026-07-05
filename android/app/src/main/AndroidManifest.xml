@@ -37,6 +37,12 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/love_snap_widget_small_info" />
         </receiver>
+        <receiver android:name="com.lovesnaps.app.LoveMediumWidgetProvider" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/love_snap_widget_medium_info" />
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
