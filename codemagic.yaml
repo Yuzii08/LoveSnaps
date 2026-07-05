@@ -1,0 +1,65 @@
+workflows:
+  android-release:
+    name: LoveSnaps Android Release
+    max_build_duration: 30
+    environment:
+      flutter: 3.24.5  # Stable version compatible with home_widget 0.8.1
+      java: 17
+      vars:
+        PACKAGE_NAME: "com.lovesnaps.app"
+    scripts:
+      - name: Generate google-services.json
+        script: |
+          mkdir -p android/app
+          cat > android/app/google-services.json << 'EOF'
+          {
+            "project_info": {
+              "project_number": "1062036834408",
+              "project_id": "lovesnaps-app-2026",
+              "storage_bucket": "lovesnaps-app-2026.firebasestorage.app"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:1062036834408:android:477c617019e5d11b5c13dd",
+                  "android_client_info": {
+                    "package_name": "com.lovesnaps.app"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyCWky4Ba7OBql7qqah2XNN_118FwQx1oBM"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+
+      - name: Inject version from commit
+        script: |
+          echo "const String APP_COMMIT_SHA = '$CM_COMMIT';" > lib/core/version.dart
+
+      - name: Install dependencies
+        script: flutter pub get
+
+      - name: Build APK
+        script: flutter build apk --release
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+    publishing:
+      email:
+        recipients:
+          - yuzii08@gmail.com   # ← Change this to your email
+        notify:
+          success: true
+          failure: true
