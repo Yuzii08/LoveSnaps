@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description_small">Shows your days together and streak count</string>
+    <string name="widget_description_medium">Shows days together, streak, distance and miss you button</string>
+</resources>
