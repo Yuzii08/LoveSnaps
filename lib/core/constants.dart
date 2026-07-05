@@ -8,8 +8,8 @@ class AppConstants {
   static const bool useLocalMock = false;
 
   // Supabase Configuration (Free Storage)
-  static const String supabaseUrl = 'YOUR_SUPABASE_URL';
-  static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String supabaseUrl = 'https://ejufjwtpzusgjyhqcsxz.supabase.co';
+  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqdWZqd3RwenVzZ2p5aHFjc3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTM4NDgsImV4cCI6MjA4OTEyOTg0OH0.lMj99M2nRI8Te8sGpjzEESa4aDSgZtmDdnOa1OWu320';
   static const String supabaseSnapsBucket = 'snaps';
 
   // SharedPreferences / HomeWidget keys

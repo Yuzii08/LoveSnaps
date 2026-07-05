@@ -68,7 +68,7 @@ class SnapService {
         final path = 'couples/$coupleId/$filename';
         await Supabase.instance.client.storage
             .from(AppConstants.supabaseSnapsBucket)
-            .uploadBytes(
+            .uploadBinary(
               path,
               bytes,
               fileOptions: const FileOptions(contentType: 'image/jpeg', cacheControl: '3600'),
