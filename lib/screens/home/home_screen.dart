@@ -12,6 +12,7 @@ import '../../services/streak_service.dart';
 import '../../services/location_service.dart';
 import '../../services/widget_service.dart';
 import '../../services/update_service.dart';
+import 'jam_screen.dart';
 import '../../widgets/days_card.dart';
 import '../../widgets/streak_card.dart';
 import '../../widgets/distance_card.dart';
@@ -144,225 +145,256 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) => _syncWidgets(couple));
           final snapsAsync = ref.watch(snapsStreamProvider);
 
-          return SafeArea(
-            bottom: false,
-            child: CustomScrollView(
-              slivers: [
-                // Custom App Bar (Matches HTML header)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: const BoxDecoration(
-                            color: LoveSnapsColors.primaryContainer,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.mood_rounded, color: LoveSnapsColors.primary),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Text(
-                                'LoveSnaps',
-                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: LoveSnapsColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+          Widget getBody() {
+            switch (_currentTab) {
+              case 1:
+                return JamScreen(couple: couple);
+              case 2:
+                return const Center(child: Text('🌸 Memories Screen Coming Soon!'));
+              case 3:
+                return const Center(child: Text('🌸 Profile Screen Coming Soon!'));
+              default:
+                return CustomScrollView(
+                  slivers: [
+                    // Custom App Bar (Matches HTML header)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: const BoxDecoration(
+                                color: LoveSnapsColors.primaryContainer,
+                                shape: BoxShape.circle,
                               ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.favorite_rounded, color: LoveSnapsColors.primary),
-                          onPressed: () {},
-                        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
-                          duration: 2.seconds,
-                          begin: const Offset(1.0, 1.0),
-                          end: const Offset(1.1, 1.1),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      if (couple.isMilestoneDay)
-                        _MilestoneBanner(days: couple.daysTogetherCount)
-                            .animate()
-                            .fadeIn(duration: 400.ms)
-                            .slideY(begin: -0.5, end: 0),
-                      if (couple.isMilestoneDay) const SizedBox(height: 16),
-
-                      // Day Counter Card
-                      DaysCard(couple: couple)
-                          .animate()
-                          .fadeIn(duration: 400.ms, delay: 50.ms)
-                          .slideY(begin: 0.15, end: 0),
-
-                      const SizedBox(height: 16),
-
-                      // Grid for Streak and Jam
-                      Row(
-                        children: [
-                          Expanded(
-                            child: StreakCard(
-                              couple: couple,
-                              onCheckIn: () => _checkIn(couple),
-                            ).animate()
-                             .fadeIn(duration: 400.ms, delay: 100.ms)
-                             .slideY(begin: 0.15, end: 0),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: LoveSnapsColors.secondaryContainer,
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+                              child: const Center(
+                                child: Icon(Icons.mood_rounded, color: LoveSnapsColors.primary),
                               ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(24),
-                                  onTap: () {},
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(20),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 48,
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.5),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Center(
-                                            child: Icon(Icons.music_note_rounded, color: LoveSnapsColors.secondary),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text(
-                                          'Currently\nListening',
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            color: LoveSnapsColors.onSecondaryContainer,
-                                            fontWeight: FontWeight.w600,
-                                            height: 1.2,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'LoveSnaps',
+                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      color: LoveSnapsColors.primary,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ).animate().fadeIn(duration: 400.ms, delay: 150.ms).slideY(begin: 0.15, end: 0),
-                          ),
-                        ],
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.favorite_rounded, color: LoveSnapsColors.primary),
+                              onPressed: () {},
+                            ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                              duration: 2.seconds,
+                              begin: const Offset(1.0, 1.0),
+                              end: const Offset(1.1, 1.1),
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
 
-                      const SizedBox(height: 16),
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          if (couple.isMilestoneDay)
+                            _MilestoneBanner(days: couple.daysTogetherCount)
+                                .animate()
+                                .fadeIn(duration: 400.ms)
+                                .slideY(begin: -0.5, end: 0),
+                          if (couple.isMilestoneDay) const SizedBox(height: 16),
 
-                      // Distance Card
-                      DistanceCard(
-                        couple: couple,
-                        myUid: myUid,
-                        onMissYou: _sendMissYou,
-                      )
-                          .animate()
-                          .fadeIn(duration: 400.ms, delay: 200.ms)
-                          .slideY(begin: 0.15, end: 0),
+                          // Day Counter Card
+                          DaysCard(couple: couple)
+                              .animate()
+                              .fadeIn(duration: 400.ms, delay: 50.ms)
+                              .slideY(begin: 0.15, end: 0),
 
-                      const SizedBox(height: 32),
-                      
-                      // Recent Snaps
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Recent Snaps', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: LoveSnapsColors.primary)),
-                          Text('VIEW ALL', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.secondary)),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        clipBehavior: Clip.none,
-                        child: snapsAsync.when(
-                          data: (snaps) {
-                            return Row(
-                              children: [
-                                ...snaps.map((snap) => Padding(
-                                  padding: const EdgeInsets.only(right: 16),
-                                  child: _buildSnapCard(snap),
-                                )),
-                                // Add Snap button
-                                Container(
-                                  width: 140,
-                                  height: 180,
+                          const SizedBox(height: 16),
+
+                          // Grid for Streak and Jam
+                          Row(
+                            children: [
+                              Expanded(
+                                child: StreakCard(
+                                  couple: couple,
+                                  onCheckIn: () => _checkIn(couple),
+                                )
+                                    .animate()
+                                    .fadeIn(duration: 400.ms, delay: 100.ms)
+                                    .slideY(begin: 0.15, end: 0),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Container(
                                   decoration: BoxDecoration(
-                                    color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                                    color: LoveSnapsColors.secondaryContainer,
                                     borderRadius: BorderRadius.circular(24),
-                                    border: Border.all(color: LoveSnapsColors.primaryContainer, width: 2, style: BorderStyle.solid),
+                                    boxShadow: LoveSnapsShadows.marshmallowShadowCard,
                                   ),
                                   child: Material(
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(24),
-                                      onTap: () => _addSnap(couple.coupleId),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle,
+                                      onTap: () => setState(() => _currentTab = 1),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 48,
+                                              height: 48,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.5),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Center(
+                                                child: Icon(Icons.music_note_rounded, color: LoveSnapsColors.secondary),
+                                              ),
                                             ),
-                                            child: const Icon(Icons.add, color: LoveSnapsColors.primaryContainer),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text('Add Snap', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.primaryContainer)),
-                                        ],
+                                            const SizedBox(height: 12),
+                                            Text(
+                                              (couple.currentJamTitle != null && couple.currentJamTitle!.isNotEmpty)
+                                                  ? couple.currentJamTitle!
+                                                  : 'Currently\nListening',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: LoveSnapsColors.onSecondaryContainer,
+                                                fontWeight: FontWeight.w600,
+                                                height: 1.2,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            if (couple.currentJamTitle != null && couple.currentJamTitle!.isNotEmpty) ...[
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                'by ${couple.currentJamArtist}',
+                                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                  color: LoveSnapsColors.secondary,
+                                                  fontSize: 10,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ]
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
-                          loading: () => Row(
-                            children: List.generate(3, (index) => Padding(
-                              padding: const EdgeInsets.only(right: 16),
-                              child: Container(
-                                width: 140,
-                                height: 180,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                ).animate().fadeIn(duration: 400.ms, delay: 150.ms).slideY(begin: 0.15, end: 0),
                               ),
-                            )),
+                            ],
                           ),
-                          error: (err, _) => Text('Error loading snaps: $err'),
-                        ),
+
+                          const SizedBox(height: 16),
+
+                          // Distance Card
+                          DistanceCard(
+                            couple: couple,
+                            myUid: myUid,
+                            onMissYou: _sendMissYou,
+                          )
+                              .animate()
+                              .fadeIn(duration: 400.ms, delay: 200.ms)
+                              .slideY(begin: 0.15, end: 0),
+
+                          const SizedBox(height: 32),
+                          
+                          // Recent Snaps
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Recent Snaps', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: LoveSnapsColors.primary)),
+                              Text('VIEW ALL', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.secondary)),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            clipBehavior: Clip.none,
+                            child: snapsAsync.when(
+                              data: (snaps) {
+                                return Row(
+                                  children: [
+                                    ...snaps.map((snap) => Padding(
+                                      padding: const EdgeInsets.only(right: 16),
+                                      child: _buildSnapCard(snap),
+                                    )),
+                                    // Add Snap button
+                                    Container(
+                                      width: 140,
+                                      height: 180,
+                                      decoration: BoxDecoration(
+                                        color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(24),
+                                        border: Border.all(color: LoveSnapsColors.primaryContainer, width: 2, style: BorderStyle.solid),
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(24),
+                                          onTap: () => _addSnap(couple.coupleId),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                width: 40,
+                                                height: 40,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Icon(Icons.add, color: LoveSnapsColors.primaryContainer),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text('Add Snap', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.primaryContainer)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                              loading: () => Row(
+                                children: List.generate(3, (index) => Padding(
+                                  padding: const EdgeInsets.only(right: 16),
+                                  child: Container(
+                                    width: 140,
+                                    height: 180,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                  ),
+                                )),
+                              ),
+                              error: (err, _) => Text('Error loading snaps: $err'),
+                            ),
+                          ),
+                        ]),
                       ),
-                    ]),
-                  ),
-                ),
-              ],
-            ),
+                    ),
+                  ],
+                );
+            }
+          }
+
+          return SafeArea(
+            bottom: false,
+            child: getBody(),
           );
         },
       ),
