@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,6 +12,45 @@ import '../../services/snap_service.dart';
 class MemoriesScreen extends ConsumerWidget {
   const MemoriesScreen({super.key});
 
+  Widget _buildImageWidget(String imageUrl, {BoxFit fit = BoxFit.cover}) {
+    if (imageUrl.startsWith('data:image')) {
+      try {
+        final base64Content = imageUrl.split(',').last;
+        final bytes = base64Decode(base64Content);
+        return Image.memory(
+          bytes,
+          fit: fit,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      } catch (e) {
+        return Container(
+          color: LoveSnapsColors.surfaceVariant,
+          child: const Center(
+            child: Icon(Icons.broken_image_rounded),
+          ),
+        );
+      }
+    } else {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: fit,
+        width: double.infinity,
+        height: double.infinity,
+        placeholder: (context, url) => Container(
+          color: LoveSnapsColors.surfaceVariant,
+          child: const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
+          color: LoveSnapsColors.surfaceVariant,
+          child: const Icon(Icons.error_outline),
+        ),
+      );
+    }
+  }
+
   void _openFullImage(BuildContext context, SnapModel snap) {
     showDialog(
       context: context,
@@ -23,11 +63,7 @@ class MemoriesScreen extends ConsumerWidget {
             children: [
               Hero(
                 tag: snap.id,
-                child: CachedNetworkImage(
-                  imageUrl: snap.imageUrl,
-                  fit: BoxFit.contain,
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                ),
+                child: _buildImageWidget(snap.imageUrl, fit: BoxFit.contain),
               ),
               if (snap.caption.isNotEmpty) ...[
                 const SizedBox(height: 24),
@@ -152,17 +188,7 @@ class MemoriesScreen extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(8),
                                   child: Hero(
                                     tag: snap.id,
-                                    child: CachedNetworkImage(
-                                      imageUrl: snap.imageUrl,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      placeholder: (context, url) => Container(
-                                        color: LoveSnapsColors.surfaceVariant,
-                                        child: const Center(
-                                          child: CircularProgressIndicator(strokeWidth: 2),
-                                        ),
-                                      ),
-                                    ),
+                                    child: _buildImageWidget(snap.imageUrl),
                                   ),
                                 ),
                               ),

@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,7 +29,6 @@ final snapsStreamProvider = StreamProvider<List<SnapModel>>((ref) {
 
 class SnapService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final ImagePicker _picker = ImagePicker();
 
@@ -40,9 +39,9 @@ class SnapService {
     try {
       final file = await _picker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1080,
-        maxHeight: 1350,
-        imageQuality: 85,
+        maxWidth: 500,
+        maxHeight: 500,
+        imageQuality: 25, // Heavily compressed so base64 data fits comfortably under 1MB document limit
       );
       return file;
     } catch (e) {
@@ -51,33 +50,16 @@ class SnapService {
     }
   }
 
-  /// Uploads a photo to Firebase Storage and saves its metadata in Firestore.
+  /// Converts image to Base64 and saves directly in Firestore, bypassing Storage upgrade
   Future<void> uploadSnap({
     required String coupleId,
     required XFile file,
     required String caption,
   }) async {
     final snapId = const Uuid().v4();
-    final filename = '$snapId.jpg';
-    final ref = _storage.ref().child('couples/$coupleId/snaps/$filename');
-
-    String imageUrl;
-    
-    // Web handles uploads via bytes
-    if (kIsWeb) {
-      final bytes = await file.readAsBytes();
-      final uploadTask = await ref.putData(
-        bytes,
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-      imageUrl = await uploadTask.ref.getDownloadURL();
-    } else {
-      final uploadTask = await ref.putFile(
-        File(file.path),
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-      imageUrl = await uploadTask.ref.getDownloadURL();
-    }
+    final bytes = await file.readAsBytes();
+    final base64Str = base64Encode(bytes);
+    final imageUrl = 'data:image/jpeg;base64,$base64Str';
 
     final snap = SnapModel(
       id: snapId,
@@ -87,7 +69,7 @@ class SnapService {
       timestamp: DateTime.now(),
     );
 
-    // Save metadata under couples/{coupleId}/snaps
+    // Save metadata and base64 string directly under couples/{coupleId}/snaps
     await _db
         .collection(AppConstants.couplesCollection)
         .doc(coupleId)

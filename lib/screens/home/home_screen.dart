@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -488,6 +489,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  Widget _buildImageWidget(String imageUrl) {
+    if (imageUrl.startsWith('data:image')) {
+      try {
+        final base64Content = imageUrl.split(',').last;
+        final bytes = base64Decode(base64Content);
+        return Image.memory(
+          bytes,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+        );
+      } catch (e) {
+        return Container(
+          color: LoveSnapsColors.surfaceVariant,
+          child: const Center(
+            child: Icon(Icons.broken_image_rounded),
+          ),
+        );
+      }
+    } else {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          color: LoveSnapsColors.surfaceVariant,
+          child: const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
+          color: LoveSnapsColors.surfaceVariant,
+          child: const Icon(Icons.error_outline),
+        ),
+      );
+    }
+  }
+
   Widget _buildSnapCard(SnapModel snap) {
     return Container(
       width: 140,
@@ -502,22 +542,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: CachedNetworkImage(
-              imageUrl: snap.imageUrl,
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: LoveSnapsColors.surfaceVariant,
-                child: const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: LoveSnapsColors.surfaceVariant,
-                child: const Icon(Icons.error_outline),
-              ),
-            ),
+            child: _buildImageWidget(snap.imageUrl),
           ),
           if (snap.caption.isNotEmpty)
             Positioned(
