@@ -66,12 +66,27 @@ jobs:
       - name: 📦 Install dependencies
         run: flutter pub get
 
+      - name: 📝 Inject Commit SHA
+        run: |
+          COMMIT_SHA=${GITHUB_SHA}
+          echo "const String APP_COMMIT_SHA = '$COMMIT_SHA';" > lib/core/version.dart
+
       - name: 🏗️ Build APK
         run: flutter build apk --release
 
-      - name: 📤 Upload APK
+      - name: 📤 Upload APK (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: LoveSnaps-APK
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+
+      - name: 🚀 Release to GitHub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "Latest Update"
+          files: build/app/outputs/flutter-apk/app-release.apk

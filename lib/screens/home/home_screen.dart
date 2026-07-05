@@ -11,6 +11,7 @@ import '../../services/couple_service.dart';
 import '../../services/streak_service.dart';
 import '../../services/location_service.dart';
 import '../../services/widget_service.dart';
+import '../../services/update_service.dart';
 import '../../widgets/days_card.dart';
 import '../../widgets/streak_card.dart';
 import '../../widgets/distance_card.dart';
@@ -33,6 +34,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (WidgetService.isMissYouCallback(uri)) {
         _sendMissYou();
       }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateService.checkForUpdates(context);
     });
   }
 
