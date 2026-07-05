@@ -162,7 +162,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.6),
                                 shape: BoxShape.circle,
-                                boxShadow: LoveSnapsShadows.marshmallowShadowLarge,
+                                boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
                               ),
                               child: Stack(
                                 alignment: Alignment.center,

@@ -239,4 +239,13 @@ class LoveSnapsShadows {
       offset: const Offset(0, 12),
     ),
   ];
+
+  // Tertiary glow for milestones
+  static final marshmallowGlow = [
+    BoxShadow(
+      color: const Color(0x4Db7f6c4),
+      blurRadius: 28,
+      offset: const Offset(0, 8),
+    ),
+  ];
 }
