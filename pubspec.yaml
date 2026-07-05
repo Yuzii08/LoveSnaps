@@ -22,6 +22,9 @@ dependencies:
   # Home Screen Widgets
   home_widget: ^0.8.1
 
+  # Supabase Storage
+  supabase_flutter: ^2.6.0
+
   # Location
   geolocator: ^11.0.0
   permission_handler: ^11.3.0

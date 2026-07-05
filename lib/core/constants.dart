@@ -7,6 +7,11 @@ class AppConstants {
   // Toggle local mock mode for lag-free instant demo/testing
   static const bool useLocalMock = false;
 
+  // Supabase Configuration (Free Storage)
+  static const String supabaseUrl = 'YOUR_SUPABASE_URL';
+  static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String supabaseSnapsBucket = 'snaps';
+
   // SharedPreferences / HomeWidget keys
   static const String widgetKeyStreakCount = 'streak_count';
   static const String widgetKeyDaysCount = 'days_count';

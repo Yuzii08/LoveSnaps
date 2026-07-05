@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../core/constants.dart';
@@ -36,12 +37,13 @@ class SnapService {
 
   /// Takes a photo using the device camera (or drops down to file picker on Web)
   Future<XFile?> capturePhoto() async {
+    final isSupabaseConfigured = AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL';
     try {
       final file = await _picker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 500,
-        maxHeight: 500,
-        imageQuality: 25, // Heavily compressed so base64 data fits comfortably under 1MB document limit
+        maxWidth: isSupabaseConfigured ? 1080 : 500,
+        maxHeight: isSupabaseConfigured ? 1350 : 500,
+        imageQuality: isSupabaseConfigured ? 80 : 25,
       );
       return file;
     } catch (e) {
@@ -50,7 +52,7 @@ class SnapService {
     }
   }
 
-  /// Converts image to Base64 and saves directly in Firestore, bypassing Storage upgrade
+  /// Converts image to Base64 (or uploads to Supabase Storage if configured) and saves in Firestore
   Future<void> uploadSnap({
     required String coupleId,
     required XFile file,
@@ -58,8 +60,32 @@ class SnapService {
   }) async {
     final snapId = const Uuid().v4();
     final bytes = await file.readAsBytes();
-    final base64Str = base64Encode(bytes);
-    final imageUrl = 'data:image/jpeg;base64,$base64Str';
+    String imageUrl = '';
+
+    if (AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL') {
+      try {
+        final filename = '$snapId.jpg';
+        final path = 'couples/$coupleId/$filename';
+        await Supabase.instance.client.storage
+            .from(AppConstants.supabaseSnapsBucket)
+            .uploadBytes(
+              path,
+              bytes,
+              fileOptions: const FileOptions(contentType: 'image/jpeg', cacheControl: '3600'),
+            );
+        imageUrl = Supabase.instance.client.storage
+            .from(AppConstants.supabaseSnapsBucket)
+            .getPublicUrl(path);
+        debugPrint('Uploaded snap to Supabase: $imageUrl');
+      } catch (e) {
+        debugPrint('Supabase upload failed, falling back to Base64: $e');
+      }
+    }
+
+    if (imageUrl.isEmpty) {
+      final base64Str = base64Encode(bytes);
+      imageUrl = 'data:image/jpeg;base64,$base64Str';
+    }
 
     final snap = SnapModel(
       id: snapId,
@@ -69,7 +95,7 @@ class SnapService {
       timestamp: DateTime.now(),
     );
 
-    // Save metadata and base64 string directly under couples/{coupleId}/snaps
+    // Save metadata and URL directly under couples/{coupleId}/snaps
     await _db
         .collection(AppConstants.couplesCollection)
         .doc(coupleId)
