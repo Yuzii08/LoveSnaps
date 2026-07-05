@@ -24,25 +24,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 2000));
     if (!mounted) return;
 
-    final authState = ref.read(authStateProvider);
-    authState.when(
-      data: (user) async {
-        if (user == null) {
-          context.go('/auth');
-          return;
-        }
-        // Check if already paired
-        final userDoc = await ref.read(currentUserDocProvider.future);
-        if (!mounted) return;
-        if (userDoc?.isPaired == true) {
-          context.go('/home');
-        } else {
-          context.go('/pair');
-        }
-      },
-      loading: () => context.go('/auth'),
-      error: (_, __) => context.go('/auth'),
-    );
+    try {
+      final user = await ref.read(authStateProvider.future);
+      if (!mounted) return;
+
+      if (user == null) {
+        context.go('/auth');
+        return;
+      }
+      // Check if already paired
+      final userDoc = await ref.read(currentUserDocProvider.future);
+      if (!mounted) return;
+      if (userDoc?.isPaired == true) {
+        context.go('/home');
+      } else {
+        context.go('/pair');
+      }
+    } catch (_) {
+      if (mounted) {
+        context.go('/auth');
+      }
+    }
   }
 
   @override
