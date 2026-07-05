@@ -3,7 +3,7 @@ workflows:
     name: LoveSnaps Android Release
     max_build_duration: 30
     environment:
-      flutter: 3.24.5  # Stable version compatible with home_widget 0.8.1
+      flutter: stable
       java: 17
       vars:
         PACKAGE_NAME: "com.lovesnaps.app"
