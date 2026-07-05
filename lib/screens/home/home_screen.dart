@@ -14,6 +14,8 @@ import '../../services/widget_service.dart';
 import '../../services/update_service.dart';
 import '../../services/notification_service.dart';
 import 'jam_screen.dart';
+import 'memories_screen.dart';
+import 'profile_screen.dart';
 import '../../widgets/days_card.dart';
 import '../../widgets/streak_card.dart';
 import '../../widgets/distance_card.dart';
@@ -152,9 +154,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               case 1:
                 return JamScreen(couple: couple);
               case 2:
-                return const Center(child: Text('🌸 Memories Screen Coming Soon!'));
+                return const MemoriesScreen();
               case 3:
-                return const Center(child: Text('🌸 Profile Screen Coming Soon!'));
+                return const ProfileScreen();
               default:
                 return CustomScrollView(
                   slivers: [

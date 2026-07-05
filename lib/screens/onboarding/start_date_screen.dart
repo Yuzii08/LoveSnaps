@@ -57,7 +57,11 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
       if (coupleId == null) throw Exception('Not paired yet.');
       await ref.read(coupleServiceProvider).setStartDate(coupleId, _selectedDate!);
       if (!mounted) return;
-      context.go('/permissions');
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/permissions');
+      }
     } catch (e) {
       setState(() { _error = e.toString(); });
     } finally {
