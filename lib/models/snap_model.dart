@@ -1,0 +1,41 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
+
+class SnapModel extends Equatable {
+  final String id;
+  final String imageUrl;
+  final String senderId;
+  final String caption;
+  final DateTime timestamp;
+
+  const SnapModel({
+    required this.id,
+    required this.imageUrl,
+    required this.senderId,
+    required this.caption,
+    required this.timestamp,
+  });
+
+  factory SnapModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return SnapModel(
+      id: doc.id,
+      imageUrl: data['imageUrl'] as String? ?? '',
+      senderId: data['senderId'] as String? ?? '',
+      caption: data['caption'] as String? ?? '',
+      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'imageUrl': imageUrl,
+      'senderId': senderId,
+      'caption': caption,
+      'timestamp': Timestamp.fromDate(timestamp),
+    };
+  }
+
+  @override
+  List<Object?> get props => [id, imageUrl, senderId, caption, timestamp];
+}

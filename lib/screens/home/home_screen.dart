@@ -16,6 +16,9 @@ import '../../widgets/days_card.dart';
 import '../../widgets/streak_card.dart';
 import '../../widgets/distance_card.dart';
 import '../../widgets/memory_card.dart';
+import '../../models/snap_model.dart';
+import '../../services/snap_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -139,6 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           }
 
           WidgetsBinding.instance.addPostFrameCallback((_) => _syncWidgets(couple));
+          final snapsAsync = ref.watch(snapsStreamProvider);
 
           return SafeArea(
             bottom: false,
@@ -293,38 +297,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         clipBehavior: Clip.none,
-                        child: Row(
-                          children: [
-                            _buildSnapPlaceholder('Morning ☕️', 'assets/images/placeholder_snap_1.jpg'),
-                            const SizedBox(width: 16),
-                            _buildSnapPlaceholder('Park run 🐶', 'assets/images/placeholder_snap_2.jpg'),
-                            const SizedBox(width: 16),
-                            Container(
-                              width: 140,
-                              height: 180,
-                              decoration: BoxDecoration(
-                                color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(color: LoveSnapsColors.primaryContainer, width: 2, style: BorderStyle.solid),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.add, color: LoveSnapsColors.primaryContainer),
+                        child: snapsAsync.when(
+                          data: (snaps) {
+                            return Row(
+                              children: [
+                                ...snaps.map((snap) => Padding(
+                                  padding: const EdgeInsets.only(right: 16),
+                                  child: _buildSnapCard(snap),
+                                )),
+                                // Add Snap button
+                                Container(
+                                  width: 140,
+                                  height: 180,
+                                  decoration: BoxDecoration(
+                                    color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(color: LoveSnapsColors.primaryContainer, width: 2, style: BorderStyle.solid),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text('Add Snap', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.primaryContainer)),
-                                ],
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(24),
+                                      onTap: () => _addSnap(couple.coupleId),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: const BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(Icons.add, color: LoveSnapsColors.primaryContainer),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text('Add Snap', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.primaryContainer)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                          loading: () => Row(
+                            children: List.generate(3, (index) => Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: Container(
+                                width: 140,
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                               ),
-                            ),
-                          ],
+                            )),
+                          ),
+                          error: (err, _) => Text('Error loading snaps: $err'),
                         ),
                       ),
                     ]),
@@ -336,6 +367,145 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         },
       ),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Future<void> _addSnap(String coupleId) async {
+    final snapService = ref.read(snapServiceProvider);
+    final file = await snapService.capturePhoto();
+    if (file == null) return;
+
+    if (!mounted) return;
+    
+    // Show a dialog to get caption
+    final captionController = TextEditingController();
+    final caption = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('🌸 Add a Caption'),
+          content: TextField(
+            controller: captionController,
+            decoration: const InputDecoration(
+              hintText: 'What are you up to?',
+            ),
+            maxLength: 50,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, ''),
+              child: const Text('Skip'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, captionController.text),
+              child: const Text('Post Snap'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted) return;
+
+    // Show loading snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            ),
+            SizedBox(width: 16),
+            Text('Uploading snap...'),
+          ],
+        ),
+        backgroundColor: LoveSnapsColors.primary,
+        duration: const Duration(days: 1), // keeps visible until upload completes or fails
+      ),
+    );
+
+    try {
+      await snapService.uploadSnap(
+        coupleId: coupleId,
+        file: file,
+        caption: caption ?? '',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('📸 Snap posted successfully!'),
+          backgroundColor: LoveSnapsColors.pinkAccent,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Upload failed: $e'),
+          backgroundColor: LoveSnapsColors.error,
+        ),
+      );
+    }
+  }
+
+  Widget _buildSnapCard(SnapModel snap) {
+    return Container(
+      width: 140,
+      height: 180,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: CachedNetworkImage(
+              imageUrl: snap.imageUrl,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: LoveSnapsColors.surfaceVariant,
+                child: const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: LoveSnapsColors.surfaceVariant,
+                child: const Icon(Icons.error_outline),
+              ),
+            ),
+          ),
+          if (snap.caption.isNotEmpty)
+            Positioned(
+              bottom: 8,
+              left: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  snap.caption,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
