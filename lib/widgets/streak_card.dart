@@ -1,23 +1,14 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-
 import '../core/theme.dart';
 import '../models/couple_model.dart';
 
 class StreakCard extends StatelessWidget {
   final CoupleModel couple;
-  final String myUid;
-  final bool atRisk;
-  final bool myCheckedIn;
   final VoidCallback onCheckIn;
 
   const StreakCard({
-    super.key,
+    super.key, 
     required this.couple,
-    required this.myUid,
-    required this.atRisk,
-    required this.myCheckedIn,
     required this.onCheckIn,
   });
 
@@ -25,77 +16,68 @@ class StreakCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final streak = couple.streakCount;
 
-    return GestureDetector(
-      onTap: myCheckedIn ? null : onCheckIn,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: LoveSnapsColors.tertiaryContainer,
-          borderRadius: BorderRadius.circular(32),
-          boxShadow: LoveSnapsShadows.marshmallowShadowMedium,
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Inner gradient
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32),
-                  gradient: LinearGradient(
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    colors: [
-                      Colors.white.withOpacity(0.2),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            
-            Column(
+    return Container(
+      decoration: BoxDecoration(
+        color: LoveSnapsColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onCheckIn,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Flame icon container
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(bottom: 12),
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.4),
                     shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFff9a9e), Color(0xFFfecfef)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFff9a9e).withOpacity(0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
                   ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: const Center(
                     child: Icon(
                       Icons.local_fire_department_rounded,
-                      size: 36,
-                      color: LoveSnapsColors.tertiary,
+                      color: Colors.white,
+                      size: 32,
                     ),
                   ),
-                ).animate(
-                  onPlay: (c) => c.repeat(reverse: true),
-                ).scale(
-                  begin: const Offset(1.0, 1.0),
-                  end: const Offset(1.05, 1.05),
-                  duration: 2.seconds,
                 ),
-                
+                const SizedBox(height: 12),
                 Text(
-                  '$streak Days',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: LoveSnapsColors.onTertiaryContainer,
+                  '$streak day',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: LoveSnapsColors.primary,
+                    height: 1.1,
                   ),
+                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 4),
                 Text(
-                  myCheckedIn ? 'Current Streak!' : 'Tap to Check In',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: LoveSnapsColors.tertiary,
+                  'streak',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: LoveSnapsColors.onSurfaceVariant,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

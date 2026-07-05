@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LoveSnaps - Nudge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2e3134",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#39734b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3f8",
+                    "surface": "#f8f9fe",
+                    "surface-dim": "#d8dadf",
+                    "primary-fixed-dim": "#c5c5d8",
+                    "on-tertiary-fixed-variant": "#15512c",
+                    "surface-container-high": "#e7e8ed",
+                    "surface-variant": "#e1e2e7",
+                    "tertiary": "#306a42",
+                    "outline": "#77767d",
+                    "background": "#f8f9fe",
+                    "on-error-container": "#93000a",
+                    "primary": "#5c5d6e",
+                    "on-secondary-fixed-variant": "#134c64",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#b3f1bf",
+                    "on-error": "#ffffff",
+                    "on-background": "#191c1f",
+                    "on-surface-variant": "#46464c",
+                    "secondary-container": "#afe1fe",
+                    "tertiary-fixed-dim": "#97d5a4",
+                    "outline-variant": "#c7c5cc",
+                    "on-primary-container": "#656677",
+                    "surface-container-highest": "#e1e2e7",
+                    "surface-bright": "#f8f9fe",
+                    "on-secondary-fixed": "#001e2b",
+                    "surface-container": "#eceef3",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#5c5d6e",
+                    "secondary-fixed": "#c2e8ff",
+                    "on-secondary-container": "#32657e",
+                    "secondary": "#31647d",
+                    "inverse-on-surface": "#eff0f5",
+                    "secondary-fixed-dim": "#9ccdea",
+                    "on-tertiary-fixed": "#00210d",
+                    "on-primary-fixed": "#191b29",
+                    "primary-container": "#e6e6fa",
+                    "primary-fixed": "#e1e1f5",
+                    "inverse-primary": "#c5c5d8",
+                    "tertiary-container": "#b7f6c4",
+                    "on-surface": "#191c1f",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#444655"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "24px",
+                    "stack-sm": "12px",
+                    "unit": "8px",
+                    "gutter": "16px",
+                    "stack-md": "20px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Quicksand"
+                    ],
+                    "label-bold": [
+                            "Quicksand"
+                    ],
+                    "display-lg": [
+                            "Quicksand"
+                    ],
+                    "body-lg": [
+                            "Be Vietnam Pro"
+                    ],
+                    "title-md": [
+                            "Quicksand"
+                    ],
+                    "headline-lg-mobile": [
+                            "Quicksand"
+                    ],
+                    "body-sm": [
+                            "Be Vietnam Pro"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-bold": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "34px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .marshmallow-shadow-1 {
+            box-shadow: 0px 8px 24px rgba(204, 204, 255, 0.2);
+        }
+        .marshmallow-shadow-2 {
+            box-shadow: 0px 12px 32px rgba(255, 182, 193, 0.3);
+        }
+        
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            animation: floatUp ease-in-out infinite;
+            opacity: 0;
+            color: #ffb6c1; /* soft pink tint */
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .pulse-text {
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen overflow-hidden font-body-sm relative flex flex-col justify-between">
+<!-- Blurred Background Mockup (Home Dashboard Context) -->
+<div class="absolute inset-0 z-0 filter blur-xl opacity-30 pointer-events-none flex flex-col p-container-padding gap-stack-md">
+<!-- Top App Bar Mock -->
+<header class="flex justify-between items-center w-full max-w-7xl mx-auto pt-4 px-6 bg-transparent">
+<div class="w-10 h-10 rounded-full bg-primary-container"></div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">LoveSnaps</h1>
+<span class="material-symbols-outlined text-primary text-3xl">favorite</span>
+</header>
+<div class="grid grid-cols-2 gap-gutter mt-8">
+<div class="bg-surface h-48 rounded-2xl marshmallow-shadow-1"></div>
+<div class="bg-surface h-48 rounded-2xl marshmallow-shadow-1"></div>
+<div class="bg-surface h-32 rounded-2xl marshmallow-shadow-1 col-span-2"></div>
+</div>
+</div>
+<!-- Interaction Overlay -->
+<div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/20 backdrop-blur-md">
+<!-- Hearts Container -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none" id="hearts-container">
+<!-- Hearts injected via JS -->
+</div>
+<!-- Central Message -->
+<div class="z-20 text-center flex flex-col items-center gap-stack-sm pulse-text">
+<span class="material-symbols-outlined text-6xl text-error drop-shadow-[0_0_15px_rgba(255,182,193,0.8)]" style="font-variation-settings: 'FILL' 1;">
+                favorite
+            </span>
+<h2 class="font-display-lg text-display-lg text-secondary-container drop-shadow-md">
+                Miss you sent! ✨
+            </h2>
+<p class="font-title-md text-title-md text-on-surface-variant bg-white/50 px-6 py-2 rounded-full marshmallow-shadow-1 mt-4 backdrop-blur-sm">
+                They'll feel the love soon.
+            </p>
+</div>
+<!-- Dismiss Button -->
+<button class="absolute bottom-10 bg-white/80 hover:bg-white text-primary px-8 py-4 rounded-full font-title-md text-title-md marshmallow-shadow-2 transition-all duration-200 active:scale-95 flex items-center gap-2 z-20 backdrop-blur-md border border-primary-container">
+<span class="material-symbols-outlined">close</span>
+            Close
+        </button>
+</div>
+<!-- Navigation Shell (Hidden for this transactional/overlay screen, but keeping structure if needed for context, though guidelines say to suppress) -->
+<!-- Suppressed Bottom Nav per guidelines for transactional/overlay screens -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('hearts-container');
+            const numHearts = 40;
+            const symbols = ['favorite', 'volunteer_activism', 'sparkles', 'favorite_border'];
+            const colors = ['text-error', 'text-[#ffb6c1]', 'text-secondary-container', 'text-primary-container'];
+
+            for (let i = 0; i < numHearts; i++) {
+                const heart = document.createElement('span');
+                
+                // Randomize icon
+                const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                heart.className = `material-symbols-outlined floating-heart ${colors[Math.floor(Math.random() * colors.length)]}`;
+                heart.innerText = randomSymbol;
+
+                // Randomize fill
+                if (Math.random() > 0.5) {
+                     heart.style.fontVariationSettings = "'FILL' 1";
+                }
+
+                // Randomize properties
+                const size = Math.random() * 2 + 1; // 1rem to 3rem
+                const left = Math.random() * 100; // 0% to 100%
+                const duration = Math.random() * 4 + 3; // 3s to 7s
+                const delay = Math.random() * 2; // 0s to 2s
+
+                heart.style.fontSize = `${size}rem`;
+                heart.style.left = `${left}%`;
+                heart.style.animationDuration = `${duration}s`;
+                heart.style.animationDelay = `${delay}s`;
+
+                container.appendChild(heart);
+            }
+        });
+    </script>
+</body></html>

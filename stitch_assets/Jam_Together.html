@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LoveSnaps - Jam Together</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400..700&amp;family=Be+Vietnam+Pro:wght@400..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2e3134",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#39734b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3f8",
+                    "surface": "#f8f9fe",
+                    "surface-dim": "#d8dadf",
+                    "primary-fixed-dim": "#c5c5d8",
+                    "on-tertiary-fixed-variant": "#15512c",
+                    "surface-container-high": "#e7e8ed",
+                    "surface-variant": "#e1e2e7",
+                    "tertiary": "#306a42",
+                    "outline": "#77767d",
+                    "background": "#f8f9fe",
+                    "on-error-container": "#93000a",
+                    "primary": "#5c5d6e",
+                    "on-secondary-fixed-variant": "#134c64",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#b3f1bf",
+                    "on-error": "#ffffff",
+                    "on-background": "#191c1f",
+                    "on-surface-variant": "#46464c",
+                    "secondary-container": "#afe1fe",
+                    "tertiary-fixed-dim": "#97d5a4",
+                    "outline-variant": "#c7c5cc",
+                    "on-primary-container": "#656677",
+                    "surface-container-highest": "#e1e2e7",
+                    "surface-bright": "#f8f9fe",
+                    "on-secondary-fixed": "#001e2b",
+                    "surface-container": "#eceef3",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#5c5d6e",
+                    "secondary-fixed": "#c2e8ff",
+                    "on-secondary-container": "#32657e",
+                    "secondary": "#31647d",
+                    "inverse-on-surface": "#eff0f5",
+                    "secondary-fixed-dim": "#9ccdea",
+                    "on-tertiary-fixed": "#00210d",
+                    "on-primary-fixed": "#191b29",
+                    "primary-container": "#e6e6fa",
+                    "primary-fixed": "#e1e1f5",
+                    "inverse-primary": "#c5c5d8",
+                    "tertiary-container": "#b7f6c4",
+                    "on-surface": "#191c1f",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#444655"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "24px",
+                    "stack-sm": "12px",
+                    "unit": "8px",
+                    "gutter": "16px",
+                    "stack-md": "20px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Quicksand"
+                    ],
+                    "label-bold": [
+                            "Quicksand"
+                    ],
+                    "display-lg": [
+                            "Quicksand"
+                    ],
+                    "body-lg": [
+                            "Be Vietnam Pro"
+                    ],
+                    "title-md": [
+                            "Quicksand"
+                    ],
+                    "headline-lg-mobile": [
+                            "Quicksand"
+                    ],
+                    "body-sm": [
+                            "Be Vietnam Pro"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-bold": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "34px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f8f9fe;
+            background-image: radial-gradient(circle at 100% 100%, rgba(204, 204, 255, 0.1) 0, transparent 50%), radial-gradient(circle at 0% 0%, rgba(255, 182, 193, 0.1) 0, transparent 50%);
+            min-height: 100vh;
+        }
+        .marshmallow-shadow-1 {
+            box-shadow: 0px 8px 24px rgba(204, 204, 255, 0.2);
+        }
+        .marshmallow-shadow-2 {
+            box-shadow: 0px 12px 32px rgba(255, 182, 193, 0.3);
+        }
+        @keyframes soft-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+        .animate-soft-pulse {
+            animation: soft-pulse 2s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-background pb-32">
+<!-- Top App Bar (Mobile & Web) -->
+<header class="flex justify-between items-center w-full max-w-7xl mx-auto bg-transparent w-full pt-4 px-6 md:pt-8 md:px-12 sticky top-0 z-40 glass-panel border-none">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden marshmallow-shadow-1">
+<img class="w-full h-full object-cover" data-alt="A cute, soft chibi style mascot avatar representing a user. Light pastel colors, highly detailed illustration, warm and approachable design, rounded shapes, soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1CAXycgPF84CFSerc8z7C1HkGwsIzxjMCDElk-iUBeJ_fH_hGGjR21VkyE99_Zep1vYfbvLq5NpFqkvrAE_fU2g5-1rt7kCooqrfF4DEma4pxsxd_kcqOuQ3gHnV7-qm4nTTIB306njzai_7gBn0QoPxpNyGdGxYgwaRfV_FuyLnxBIOIX5-lPPlniQIanSqynsgkhCuU53kVo2muSFEkdt10pV3E3FvrX6efxHjvVIMt_g0ecr-m37-rWJVa5FRP3G6s-AHpn5Y"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">LoveSnaps</h1>
+</div>
+<div class="hidden md:flex gap-8 items-center font-title-md text-title-md">
+<a class="text-on-surface-variant hover:opacity-80 transition-colors" href="#">Home</a>
+<a class="text-primary hover:opacity-80 transition-colors font-bold" href="#">Jam</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-colors" href="#">Snaps</a>
+<a class="text-on-surface-variant hover:opacity-80 transition-colors" href="#">Profile</a>
+</div>
+<button class="hover:opacity-80 Active: scale-95 transition-transform duration-200 p-2 rounded-full text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-md mx-auto mt-stack-md px-container-padding flex flex-col gap-stack-md relative z-10 md:max-w-4xl">
+<!-- Section Header -->
+<div class="text-center mt-4">
+<h2 class="font-display-lg text-display-lg text-primary mb-2">Jam Together 🎵</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Vibing with your partner in real-time.</p>
+</div>
+<!-- Now Playing Card (Glassmorphism & Floating) -->
+<div class="relative mt-8 animate-float">
+<!-- Background blurred artwork glow -->
+<div class="absolute -inset-4 rounded-[40px] bg-secondary-container opacity-30 blur-2xl"></div>
+<div class="glass-panel rounded-[3rem] p-6 marshmallow-shadow-1 border border-white/50 relative overflow-hidden flex flex-col items-center">
+<!-- Sync Indicator -->
+<div class="absolute top-6 left-6 flex items-center gap-2 bg-tertiary-container text-on-tertiary-container px-3 py-1.5 rounded-full font-label-bold text-label-bold marshmallow-shadow-1 animate-soft-pulse">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-ping relative inline-flex"></span>
+<span class="relative z-10">In Sync</span>
+</div>
+<!-- Mascot Avatars & Floating Notes -->
+<div class="w-full flex justify-between items-center px-4 mt-8 mb-4">
+<div class="w-16 h-16 rounded-full overflow-hidden marshmallow-shadow-1 border-4 border-white z-10">
+<img class="w-full h-full object-cover" data-alt="A cute, soft chibi style mascot avatar representing a user. Light pastel colors, highly detailed illustration, warm and approachable design, rounded shapes, soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDgKfe4eePNCTgLvudihc41EVtNoX2u8ubDsi-2S-slFna13Cu20Vu1gmnFK19I6Dy9tiGIzOYnaYEmviJT8-2LfD3s4qOG6_wJfCbTSyXRHbGm8uV2U368C8pAv7YRDF3v59MNyzr-LdC89eJqaCdjlLaj5-K8r4lM0701i-7y8rCibBnOYGqC-Mpe9bhSoyiZTi0_iOZQZJEOTbPgCrGx_-wjTvkzp_xetGGpLAUaUfVbQMO-03x56i2Q5D7MJnPSAJF_qrxkZs"/>
+</div>
+<div class="flex-1 flex justify-center gap-4 text-secondary-container">
+<span class="material-symbols-outlined animate-bounce delay-100" style="font-variation-settings: 'FILL' 1; font-size: 24px;">music_note</span>
+<span class="material-symbols-outlined animate-bounce delay-300" style="font-variation-settings: 'FILL' 1; font-size: 32px;">favorite</span>
+<span class="material-symbols-outlined animate-bounce delay-200" style="font-variation-settings: 'FILL' 1; font-size: 24px;">music_note</span>
+</div>
+<div class="w-16 h-16 rounded-full overflow-hidden marshmallow-shadow-1 border-4 border-white z-10">
+<img class="w-full h-full object-cover" data-alt="A second cute, soft chibi style mascot avatar representing a partner. Complimentary pastel colors to the first avatar, highly detailed illustration, warm design, rounded shapes, soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAodJEUw4IkVx9Mlx4Ol6PNqxltEGXj1zjtIyWyygrCTov30lJnc6gMOerilXKyJnTzzOpqwk0cNEA34ohkTKWGNjQkwZXTWdcTFFL5iXKCTQ-GQaUojAT4xxCrXkgbA_AZg2B4yhuNOELmTiCIcLP70w4QEjbTUacnBupbqlrsyTGo9KboS0uUXDMNIahhb5yW_SDYOJWPWTJ1ejt2oFtwJEZPWrf8co4Pb2Coi819vPmZlSseK88w1desbZGOI4VxIc2r1SfrFP0"/>
+</div>
+</div>
+<!-- Album Art & Track Info -->
+<div class="w-full max-w-[280px] aspect-square rounded-[2rem] overflow-hidden marshmallow-shadow-2 mb-6 relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Soft, dreamy, and blurred abstract album art featuring pastel gradients of periwinkle, blush pink, and mint green. Looks like a soft watercolor or cloudscape. Gentle, aesthetic, light mode vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2riuyf0x5fSzJKPhE4sV2AWkej8jYHdRF6FBzse2UG3X7jmT1uOWoHNV-1X6wenRhKRIFrQpZXY11NjSW62a5f-njLUiEIuxSI0J_FPmKcWL8hMuBG7lBaoMLub9z3ycPaiSmzG-NgOw_Mema5a-VdETtfiFwaplEd-PC-IvpRvhUU7DSS5Df_EY4Jgi_BuUD5oHQlMQABjqs5pEMEdzrYjidQ48EAegbrgUiXI4CoFwu0-4dHp3VTn1FUm9RsJU7D_i6kBH-Rpo"/>
+</div>
+<div class="text-center w-full mb-8">
+<h3 class="font-title-md text-title-md text-on-surface mb-1 truncate">Lofi Study Beats for Two</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-80">ChilledCow &amp; Friends</p>
+</div>
+<!-- Progress Bar -->
+<div class="w-full px-4 mb-8">
+<div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-1/3 rounded-full relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md"></div>
+</div>
+</div>
+<div class="flex justify-between w-full mt-2 font-label-bold text-label-bold text-on-surface-variant opacity-60">
+<span>1:24</span>
+<span>4:20</span>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex items-center justify-center gap-6 w-full pb-4">
+<button class="p-4 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-primary active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 28px;">skip_previous</span>
+</button>
+<button class="w-20 h-20 rounded-full bg-secondary text-on-secondary marshmallow-shadow-2 hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 40px;">pause</span>
+</button>
+<button class="p-4 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-primary active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 28px;">skip_next</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Upcoming Playlist Peek (Bento Grid Style) -->
+<div class="grid grid-cols-2 gap-gutter mt-4">
+<div class="bg-surface-container-lowest p-5 rounded-2xl marshmallow-shadow-1 flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary mb-2" style="font-variation-settings: 'FILL' 1;">queue_music</span>
+<p class="font-title-md text-title-md text-on-surface">Up Next</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-1">Midnight City - M83</p>
+</div>
+<div class="bg-primary-container p-5 rounded-2xl marshmallow-shadow-1 flex flex-col justify-between items-center text-center">
+<span class="material-symbols-outlined text-on-primary-container mb-2 text-3xl" style="font-variation-settings: 'FILL' 0;">spatial_audio_off</span>
+<p class="font-label-bold text-label-bold text-on-primary-container">Recommend<br/>Track</p>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="fixed bottom-5 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-full px-6 py-3 bg-surface/80 backdrop-blur-xl shadow-[0px_12px_32px_rgba(255,182,193,0.3)] z-50 flex justify-around items-center md:hidden border-none">
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+</a>
+<a class="flex items-center justify-center bg-secondary-container text-on-secondary-container rounded-full p-3 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">music_note</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">auto_awesome_motion</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+</a>
+</nav>
+</body></html>

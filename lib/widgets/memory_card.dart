@@ -13,7 +13,7 @@ class MemoryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: LoveSnapsColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(32),
-        boxShadow: LoveSnapsShadows.marshmallowShadowMedium,
+        boxShadow: LoveSnapsShadows.marshmallowShadowCard,
       ),
       child: Stack(
         children: [

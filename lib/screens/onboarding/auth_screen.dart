@@ -71,24 +71,23 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              LoveSnapsColors.primaryContainer,
               LoveSnapsColors.background,
-              LoveSnapsColors.tertiaryContainer,
+              LoveSnapsColors.primaryContainer,
             ],
-            stops: [0.0, 0.5, 1.0],
+            stops: [0.0, 1.0],
           ),
         ),
         child: Stack(
           children: [
             // Decorative Blobs
             Positioned(
-              top: 40,
-              left: 40,
+              top: -40,
+              left: -40,
               child: Container(
-                width: 128,
-                height: 128,
+                width: 256,
+                height: 256,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.4),
+                  color: LoveSnapsColors.primaryContainer.withOpacity(0.6),
                   shape: BoxShape.circle,
                 ),
               ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
@@ -98,22 +97,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               ),
             ),
             Positioned(
-              top: 40,
-              left: 40,
+              top: -40,
+              left: -40,
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                child: const SizedBox(width: 128, height: 128),
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: const SizedBox(width: 256, height: 256),
               ),
             ),
             
             Positioned(
-              bottom: 80,
-              right: 40,
+              bottom: -40,
+              right: -40,
               child: Container(
-                width: 192,
-                height: 192,
+                width: 320,
+                height: 320,
                 decoration: BoxDecoration(
-                  color: LoveSnapsColors.primaryContainer.withOpacity(0.4),
+                  color: LoveSnapsColors.secondaryContainer.withOpacity(0.4),
                   shape: BoxShape.circle,
                 ),
               ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
@@ -123,11 +122,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               ),
             ),
             Positioned(
-              bottom: 80,
-              right: 40,
+              bottom: -40,
+              right: -40,
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-                child: const SizedBox(width: 192, height: 192),
+                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                child: const SizedBox(width: 320, height: 320),
               ),
             ),
 
@@ -228,21 +227,27 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
                         const SizedBox(height: 40),
 
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _showForm = true;
-                              _isSignIn = false;
-                            });
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text("Get Started"),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.favorite, size: 24),
-                            ],
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(9999),
+                            boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _showForm = true;
+                                _isSignIn = false;
+                              });
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text("Get Started"),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.favorite, size: 24),
+                              ],
+                            ),
                           ),
                         ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.5, end: 0, curve: Curves.easeOut),
 

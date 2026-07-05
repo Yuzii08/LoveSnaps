@@ -1,240 +1,329 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en"><head>
+<html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>LoveSnaps - Home Dashboard</title>
+<title>LoveSnaps - Home</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Quicksand:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&amp;family=Be+Vietnam+Pro:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "error": "#ba1a1a",
-                        "primary-fixed": "#e1e1f5",
-                        "on-secondary-container": "#3b6a6f",
-                        "tertiary-container": "#ffe0e3",
-                        "error-container": "#ffdad6",
-                        "surface-variant": "#e2e2e9",
-                        "secondary-fixed": "#bbebf1",
-                        "primary-container": "#e6e6fa",
-                        "on-tertiary": "#ffffff",
-                        "on-primary-fixed": "#191b29",
-                        "tertiary-fixed-dim": "#fcb3be",
-                        "on-background": "#191c20",
-                        "background": "#f9f9ff",
-                        "on-surface": "#191c20",
-                        "surface-container-lowest": "#ffffff",
-                        "on-tertiary-fixed-variant": "#6b3741",
-                        "surface-dim": "#d9d9e0",
-                        "on-secondary-fixed-variant": "#1d4d53",
-                        "secondary-container": "#b8e8ee",
-                        "on-tertiary-fixed": "#360c17",
-                        "surface-tint": "#5c5d6e",
-                        "surface-container": "#ededf4",
-                        "surface-container-highest": "#e2e2e9",
-                        "outline-variant": "#c7c5cc",
-                        "inverse-on-surface": "#f0f0f7",
-                        "tertiary": "#874e58",
-                        "on-secondary": "#ffffff",
-                        "inverse-surface": "#2e3036",
-                        "secondary": "#37656b",
-                        "primary": "#5c5d6e",
-                        "surface-bright": "#f9f9ff",
-                        "on-tertiary-container": "#915761",
-                        "outline": "#77767d",
-                        "primary-fixed-dim": "#c5c5d8",
-                        "on-error": "#ffffff",
-                        "surface": "#f9f9ff",
-                        "tertiary-fixed": "#ffd9de",
-                        "secondary-fixed-dim": "#9fcfd5",
-                        "on-surface-variant": "#46464c",
-                        "on-error-container": "#93000a",
-                        "on-primary-fixed-variant": "#444655",
-                        "surface-container-high": "#e7e8ee",
-                        "inverse-primary": "#c5c5d8",
-                        "on-primary": "#ffffff",
-                        "surface-container-low": "#f3f3fa",
-                        "on-primary-container": "#656677",
-                        "on-secondary-fixed": "#001f23"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "1rem",
-                        "lg": "2rem",
-                        "xl": "3rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "md": "24px",
-                        "container-padding": "24px",
-                        "base": "8px",
-                        "xs": "4px",
-                        "gutter": "16px",
-                        "sm": "12px",
-                        "lg": "40px",
-                        "xl": "64px"
-                    },
-                    "fontFamily": {
-                        "headline-md": ["Quicksand"],
-                        "body-md": ["Plus Jakarta Sans"],
-                        "headline-lg": ["Quicksand"],
-                        "headline-lg-mobile": ["Quicksand"],
-                        "display-lg": ["Quicksand"],
-                        "body-lg": ["Plus Jakarta Sans"],
-                        "label-md": ["Plus Jakarta Sans"],
-                        "label-sm": ["Plus Jakarta Sans"]
-                    },
-                    "fontSize": {
-                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600" }],
-                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }]
-                    }
-                }
-            }
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-surface": "#2e3134",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#39734b",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f2f3f8",
+                      "surface": "#f8f9fe",
+                      "surface-dim": "#d8dadf",
+                      "primary-fixed-dim": "#c5c5d8",
+                      "on-tertiary-fixed-variant": "#15512c",
+                      "surface-container-high": "#e7e8ed",
+                      "surface-variant": "#e1e2e7",
+                      "tertiary": "#306a42",
+                      "outline": "#77767d",
+                      "background": "#f8f9fe",
+                      "on-error-container": "#93000a",
+                      "primary": "#5c5d6e",
+                      "on-secondary-fixed-variant": "#134c64",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#b3f1bf",
+                      "on-error": "#ffffff",
+                      "on-background": "#191c1f",
+                      "on-surface-variant": "#46464c",
+                      "secondary-container": "#afe1fe",
+                      "tertiary-fixed-dim": "#97d5a4",
+                      "outline-variant": "#c7c5cc",
+                      "on-primary-container": "#656677",
+                      "surface-container-highest": "#e1e2e7",
+                      "surface-bright": "#f8f9fe",
+                      "on-secondary-fixed": "#001e2b",
+                      "surface-container": "#eceef3",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#5c5d6e",
+                      "secondary-fixed": "#c2e8ff",
+                      "on-secondary-container": "#32657e",
+                      "secondary": "#31647d",
+                      "inverse-on-surface": "#eff0f5",
+                      "secondary-fixed-dim": "#9ccdea",
+                      "on-tertiary-fixed": "#00210d",
+                      "on-primary-fixed": "#191b29",
+                      "primary-container": "#e6e6fa",
+                      "primary-fixed": "#e1e1f5",
+                      "inverse-primary": "#c5c5d8",
+                      "tertiary-container": "#b7f6c4",
+                      "on-surface": "#191c1f",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed-variant": "#444655"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "24px",
+                      "stack-sm": "12px",
+                      "unit": "8px",
+                      "gutter": "16px",
+                      "stack-md": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Quicksand"
+                      ],
+                      "label-bold": [
+                              "Quicksand"
+                      ],
+                      "display-lg": [
+                              "Quicksand"
+                      ],
+                      "body-lg": [
+                              "Be Vietnam Pro"
+                      ],
+                      "title-md": [
+                              "Quicksand"
+                      ],
+                      "headline-lg-mobile": [
+                              "Quicksand"
+                      ],
+                      "body-sm": [
+                              "Be Vietnam Pro"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
         }
-    </script>
+      </script>
 <style>
-        .marshmallow-shadow {
-            box-shadow: 0 16px 40px -8px rgba(230, 230, 250, 0.4), 0 8px 16px -4px rgba(230, 230, 250, 0.2);
+        .marshmallow-shadow-card {
+            box-shadow: 0px 8px 24px rgba(204, 204, 255, 0.2);
         }
-        .marshmallow-glow {
-            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 8px 24px rgba(252, 179, 190, 0.4);
+        .marshmallow-shadow-btn {
+            box-shadow: 0px 12px 32px rgba(255, 182, 193, 0.3);
         }
-        .blob-bg {
-            background-image: radial-gradient(circle at 20% 30%, rgba(230, 230, 250, 0.6) 0%, transparent 40%),
-                              radial-gradient(circle at 80% 70%, rgba(252, 179, 190, 0.4) 0%, transparent 40%);
+        .marshmallow-shadow-nav {
+             box-shadow: 0px 12px 32px rgba(255, 182, 193, 0.3);
         }
-        .heart-progress circle {
-            transition: stroke-dashoffset 1s ease-in-out;
+        
+        .squish-hover:active {
+            transform: scale(0.95);
         }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
-<body class="bg-background text-on-background min-h-screen blob-bg pb-32">
+        
+        body {
+            /* Soft cloud-blue gradient */
+            background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+
+        .heart-progress-mask {
+            mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            -webkit-mask-size: contain;
+        }
+      </style>
+</head>
+<body class="text-on-background relative pb-[100px]">
 <!-- TopAppBar -->
-<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl bg-transparent">
-<div class="flex justify-between items-center px-container-padding py-sm w-full max-w-7xl mx-auto">
-<button class="p-2 rounded-full hover:bg-surface-variant transition-colors text-primary hover:scale-105 duration-300">
+<header class="bg-transparent w-full pt-4 px-6 flat no shadows flex justify-between items-center w-full max-w-7xl mx-auto">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-2xl">mood</span>
+</div>
+<div class="flex flex-col items-center justify-center flex-1">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">LoveSnaps</h1>
+<img alt="LoveSnaps Logo" class="w-24 h-12 object-contain hidden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf-BrTiR4U_yEb4mTmaRsmgVTXmltmwE7QOb3CFA2oI6m67X0YbL4xrsZxjjjtQ3pcs3Az5syMtz6L2Payvjlrpr6viPcPLATjMPAfwglr4W1h1CIre4cmuG5YgdH37NaW80r8Grb6YrreBOlHgtwfZgYpT6sMeVz99WMY-OTOy_vvwYyHJas9AkwQC-tbADGkPqPkT4t4gbVZub-PE8I01RBDH-E38AsNHUVrusjUs9nJbSfOnBmbcL2WYwt-uZP7Hyad1tFe3WI"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-primary hover:opacity-80 transition-opacity Active: scale-95 transition-transform duration-200">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
 </button>
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary tracking-tight">LoveSnaps</h1>
-<button class="p-2 rounded-full hover:bg-surface-variant transition-colors text-primary hover:scale-105 duration-300">
-<span class="material-symbols-outlined">spark</span>
-</button>
-</div>
 </header>
-<main class="pt-24 px-container-padding max-w-lg mx-auto space-y-md">
-<!-- Day Counter Card -->
-<section class="bg-surface-container-lowest rounded-[2rem] p-md marshmallow-shadow relative overflow-hidden flex flex-col items-center text-center">
-<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary-container rounded-full blur-3xl opacity-50"></div>
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">Day 214 together 🌙</h2>
-<p class="font-body-md text-body-md text-on-surface-variant mb-6">Every moment counts.</p>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-7xl mx-auto px-container-padding pt-6 flex flex-col gap-stack-md relative z-10 md:grid md:grid-cols-2 md:gap-container-padding">
+<!-- Hero Card: Days Together -->
+<section class="bg-primary-container rounded-xl p-6 marshmallow-shadow-card flex flex-col items-center justify-center text-center relative overflow-hidden md:col-span-2">
+<!-- Decorative blobs -->
+<div class="absolute -top-10 -left-10 w-32 h-32 bg-white/20 rounded-full blur-xl"></div>
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c2e8ff]/30 rounded-full blur-xl"></div>
+<h2 class="font-display-lg text-display-lg text-primary mb-2 z-10">Day 214</h2>
+<p class="font-title-md text-title-md text-on-primary-container z-10">together 🌙</p>
 <!-- Heart Progress Bar -->
-<div class="relative w-40 h-40">
-<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
-<!-- Heart Path approximation for stroke -->
-<path d="M 50 80 C 50 80 10 50 10 30 C 10 15 30 10 50 30 C 70 10 90 15 90 30 C 90 50 50 80 50 80 Z" fill="none" stroke="#e6e6fa" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"></path>
-<path class="heart-progress" d="M 50 80 C 50 80 10 50 10 30 C 10 15 30 10 50 30 C 70 10 90 15 90 30 C 90 50 50 80 50 80 Z" fill="none" stroke="#fcb3be" stroke-dasharray="250" stroke-dashoffset="60" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"></path>
-</svg>
-<div class="absolute inset-0 flex items-center justify-center">
-<img class="w-20 h-20 rounded-full object-cover border-4 border-surface-container-lowest shadow-sm z-10" data-alt="A soft, plush toy marshmallow with a happy, sleepy face, sitting in a gentle, warm light setup. The background is a clean, minimal pastel purple. The aesthetic is cute, huggable, and inspired by Japanese stationary." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDutoDZN3NolluaPgMYARIDhN6zgHcXO-Ye2VOprIThwtYbV_Q2IuNfBwzSw_-njboO3MpkL3Ua02nMXSoRQsR4Cyr2ctrXr82MzlDaKJuohOfIlwXSzFPXsiHwfnS1tEY777O6lYo-ko7rSellqONmgpCJklziEHODUk93teT5eK6SjmWyZLOz_xAOXa3jI0mq-2iL1gDVYFNqGcRhRg5EhetTJIX7wCFBkpco2W4VTJnfg25VLzf3"/>
+<div class="mt-6 w-16 h-16 bg-surface-variant rounded-full relative overflow-hidden heart-progress-mask z-10">
+<div class="absolute bottom-0 left-0 w-full bg-[#ffb6c1] h-[75%] transition-all duration-1000 ease-out"></div>
 </div>
-</div>
+<p class="font-label-bold text-label-bold text-primary mt-2 z-10 opacity-70">75% to Anniversary</p>
 </section>
-<div class="grid grid-cols-2 gap-md">
+<!-- Bento Grid for Widgets -->
+<div class="grid grid-cols-2 gap-stack-sm md:col-span-2 md:grid-cols-4 md:gap-container-padding">
 <!-- Streak Widget -->
-<section class="bg-tertiary-container rounded-[2rem] p-md marshmallow-shadow flex flex-col items-center justify-center text-center relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent"></div>
-<div class="bg-white/40 p-4 rounded-full mb-3 backdrop-blur-sm animate-pulse">
-<span class="material-symbols-outlined text-4xl text-tertiary" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<div class="bg-surface rounded-[24px] p-5 marshmallow-shadow-card flex flex-col items-center justify-center aspect-square squish-hover transition-transform duration-200 cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-[#ff9a9e] to-[#fecfef] flex items-center justify-center mb-3 shadow-[0px_4px_16px_rgba(255,154,158,0.4)]">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
 </div>
-<h3 class="font-headline-md text-headline-md text-on-tertiary-container">12 Days</h3>
-<p class="font-label-md text-label-md text-tertiary">Current Streak!</p>
-</section>
-<!-- Memory Widget -->
-<section class="bg-surface-container-lowest rounded-[2rem] p-base marshmallow-shadow relative overflow-hidden group cursor-pointer">
-<img class="w-full h-32 object-cover rounded-xl mb-2 transition-transform duration-500 group-hover:scale-105" data-alt="A polaroid photo of two soft-serve ice cream cones clinking together. The photo has a retro, warm film look with light leaks. It is placed on a pristine white desk with tiny, pastel star stickers scattered around. The overall mood is sweet, nostalgic, and playful." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5v9iuoiObg-gQVWH5jvvummLgrWPHCXjI0JGV9uvy3DXxzFExdwybCvbhQP-wAPotVH_LKwss6dnEipnub3bTfBoYds_d2gkzhh9GFhsuR8tDZwvEsmZPk3MWzBsQVSWWHuNx1QpD-glGqE19AgrVZ32ifOuGZ-wnvDOjXQEusE63aKJJ0wipgxU512AG9eo4e2Q2Dqgl4bmzWDkNtNQiu6DGmM-tU7RmgMvOxMiRn3fTcJPhDbDw"/>
-<div class="absolute bottom-base left-base right-base bg-white/80 backdrop-blur-md rounded-lg p-2">
-<p class="font-label-sm text-label-sm text-primary text-center">Last weekend ✨</p>
+<h3 class="font-title-md text-title-md text-primary text-center leading-tight">12 day</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">streak</p>
 </div>
-</section>
+<!-- Jam Widget (Placeholder for Jam feature) -->
+<div class="bg-secondary-container rounded-[24px] p-5 marshmallow-shadow-card flex flex-col items-center justify-center aspect-square squish-hover transition-transform duration-200 cursor-pointer relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 blur-md rounded-full transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] animate-[spin_10s_linear_infinite]"></div>
+<div class="w-12 h-12 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center mb-3 z-10 text-secondary">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">music_note</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-secondary-container z-10 text-center font-medium">Currently<br/>Listening</p>
 </div>
 <!-- Distance Card -->
-<section class="bg-surface-container-lowest rounded-[2rem] p-md marshmallow-shadow text-center">
-<div class="flex justify-center items-center space-x-4 mb-4">
-<div class="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">person</span>
+<div class="bg-surface rounded-[24px] p-5 marshmallow-shadow-card flex flex-col justify-between col-span-2 md:col-span-2 relative overflow-hidden">
+<div class="z-10">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-[#ffb6c1] text-xl">location_on</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-wider">Distance</p>
 </div>
-<div class="flex-1 border-t-2 border-dashed border-primary-container relative">
-<span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-surface-container-lowest px-2 font-label-md text-label-md text-primary">5 miles</span>
+<h3 class="font-display-lg text-[32px] leading-tight text-primary">2.4 miles<br/><span class="text-title-md">apart</span></h3>
 </div>
-<div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-secondary">person</span>
-</div>
-</div>
-<button class="w-full bg-tertiary-fixed-dim text-on-tertiary-fixed font-headline-md text-headline-md py-4 rounded-full marshmallow-glow hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 mt-4">
+<button class="mt-4 w-full bg-[#ffb6c1] text-white py-4 rounded-full font-title-md text-title-md marshmallow-shadow-btn squish-hover transition-all duration-200 z-10 flex items-center justify-center gap-2">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
-                Send a nudge
-            </button>
+                    Miss You
+                </button>
+<!-- Abstract map background hint -->
+<div class="absolute right-0 bottom-0 w-32 h-32 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[120px] text-primary">map</span>
+</div>
+</div>
+</div>
+<!-- Memories Quick View -->
+<section class="md:col-span-2 flex flex-col gap-3">
+<div class="flex justify-between items-center px-2">
+<h3 class="font-title-md text-title-md text-primary">Recent Snaps</h3>
+<button class="text-secondary font-label-bold text-label-bold uppercase">View All</button>
+</div>
+<div class="flex gap-stack-sm overflow-x-auto pb-4 px-2 snap-x snap-mandatory hide-scrollbar">
+<style>
+                    .hide-scrollbar::-webkit-scrollbar { display: none; }
+                    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                </style>
+<!-- Snap 1 -->
+<div class="min-w-[140px] h-[180px] bg-white rounded-2xl marshmallow-shadow-card p-2 snap-center flex flex-col relative">
+<div class="w-full h-full rounded-xl bg-surface-variant overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="A soft, romantic, close-up polaroid-style photo of two hands holding coffee cups in a cozy cafe. Warm, diffused morning light streaming through a window. The aesthetic is cute, tactile, and reminiscent of Japanese stationery culture with a pastel color palette." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDyOpoLx2g4fetkVJtKtA0YRxlrsAPXV-CT-20aUvnFOA2OVt1kRbnpPd7GfgtB-Ll2tXi5Amycp1K1hcfe3oFecNkmYphY_aRf2kjldenPASSo4tNwDlXKMyykCHRkjD9_Ucd0eoGe4wWaJXFY1Jkx2eAda-fRg1yb7jLEg0QyiUDyNFqYwFZXIFD7dt07RHOnw14i-7ZTPnhaoLytvxbvXIBLrqHC-p7Jltz--mVbQyxopBvHeoStBNn_nBUmgtPJx_IbQZQvRng')"></div>
+</div>
+<span class="absolute bottom-4 left-4 bg-white/80 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-medium text-primary">Morning ☕️</span>
+</div>
+<!-- Snap 2 -->
+<div class="min-w-[140px] h-[180px] bg-white rounded-2xl marshmallow-shadow-card p-2 snap-center flex flex-col relative">
+<div class="w-full h-full rounded-xl bg-surface-variant overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="A candid, playful snapshot of a small dog running in a park, blurred slightly to show motion. Soft, golden hour lighting creating a dreamy, warm atmosphere. The image has a subtle film grain and soft pastel color grading suitable for a cute, personal scrapbook app." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBcoynmavCI9isFSkJ_tiI7eyPzC-3bsnQRdX0D4-YVCRezGLqM6gjSj8cbSQnOjkLdVHcuhNOC5MW_Bc4QCKiPsQE5qXkG2yVq_8k-gPNKY-GDutC1OUGUsWpTEvZpFAvixRmIemWv13RtBToDBdM99_pJGzacMFJVRAzTTsplhjxFAYG6YQNkO3gBkwSKnklzixA_cTD9vxBiVfhmgw4TwwH_OxNKnQwhkf0dCzSJfxvnG7KkYchfcA2Jqh0E9MrhBHjdYyM3kVg')"></div>
+</div>
+<span class="absolute bottom-4 left-4 bg-white/80 backdrop-blur-md px-2 py-1 rounded-lg text-xs font-medium text-primary">Park run 🐶</span>
+</div>
+<!-- Snap 3 Add empty state to prompt interaction -->
+<div class="min-w-[140px] h-[180px] bg-[#e6e6fa]/50 border-2 border-dashed border-[#c5c5d8] rounded-2xl p-2 snap-center flex flex-col items-center justify-center cursor-pointer hover:bg-[#e6e6fa] transition-colors">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#c5c5d8] shadow-sm mb-2">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-xs font-medium text-[#c5c5d8]">Add Snap</span>
+</div>
+</div>
 </section>
 </main>
 <!-- BottomNavBar -->
-<nav class="fixed bottom-md left-0 right-0 z-50 flex justify-around items-center p-xs md:hidden">
-<div class="bg-surface-container-lowest/90 backdrop-blur-lg w-[90%] max-w-md mx-auto rounded-full shadow-[0_8px_32px_rgba(230,230,250,0.4)] flex justify-around items-center p-xs relative">
+<nav class="md:hidden bg-surface/80 backdrop-blur-xl fixed bottom-5 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-full px-6 py-3 shadow-[0px_12px_32px_rgba(255,182,193,0.3)] z-50 flex justify-around items-center">
 <!-- Home (Active) -->
-<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-2 transition-all duration-300 scale-110 active:scale-90">
-<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
-<span class="font-label-sm text-label-sm">Home</span>
-</button>
-<!-- Jam (Inactive) -->
-<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-primary-container/50 rounded-full transition-colors active:scale-90">
-<span class="material-symbols-outlined mb-1">music_note</span>
-<span class="font-label-sm text-label-sm">Jam</span>
-</button>
-<!-- Memories (Inactive) -->
-<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-primary-container/50 rounded-full transition-colors active:scale-90">
-<span class="material-symbols-outlined mb-1">auto_awesome</span>
-<span class="font-label-sm text-label-sm">Memories</span>
-</button>
-<!-- Profile (Inactive) -->
-<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-primary-container/50 rounded-full transition-colors active:scale-90">
-<span class="material-symbols-outlined mb-1">person</span>
-<span class="font-label-sm text-label-sm">Profile</span>
-</button>
-</div>
+<a class="flex items-center justify-center bg-secondary-container text-on-secondary-container rounded-full p-3 hover:scale-110 transition-transform Active: scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+</a>
+<!-- Jam -->
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">music_note</span>
+</a>
+<!-- Memories -->
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">auto_awesome_motion</span>
+</a>
+<!-- Profile -->
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
 </nav>
-<!-- Desktop Nav (Hidden on Mobile) -->
-<nav class="hidden md:flex fixed top-0 right-0 h-full w-64 bg-surface-container-lowest/90 backdrop-blur-xl border-l border-surface-variant flex-col items-start p-md shadow-[-8px_0_32px_rgba(230,230,250,0.4)] z-40">
-<div class="mt-20 space-y-4 w-full">
-<button class="flex items-center w-full bg-primary-container text-on-primary-container rounded-xl px-4 py-3 transition-all duration-300">
-<span class="material-symbols-outlined mr-3" style="font-variation-settings: 'FILL' 1;">home</span>
-<span class="font-headline-md text-headline-md">Home</span>
-</button>
-<button class="flex items-center w-full text-on-surface-variant rounded-xl px-4 py-3 hover:bg-primary-container/50 transition-colors">
-<span class="material-symbols-outlined mr-3">music_note</span>
-<span class="font-headline-md text-headline-md">Jam</span>
-</button>
-<button class="flex items-center w-full text-on-surface-variant rounded-xl px-4 py-3 hover:bg-primary-container/50 transition-colors">
-<span class="material-symbols-outlined mr-3">auto_awesome</span>
-<span class="font-headline-md text-headline-md">Memories</span>
-</button>
-<button class="flex items-center w-full text-on-surface-variant rounded-xl px-4 py-3 hover:bg-primary-container/50 transition-colors">
-<span class="material-symbols-outlined mr-3">person</span>
-<span class="font-headline-md text-headline-md">Profile</span>
-</button>
+<!-- Desktop Side/Top Nav placeholder to satisfy rules if needed, though prompt asks for bottom nav heavily. Bottom nav is hidden on md+ -->
+<nav class="hidden md:flex fixed top-0 left-0 h-full w-20 bg-surface/80 backdrop-blur-xl shadow-lg flex-col items-center py-8 gap-8 z-50">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center mb-8">
+<span class="material-symbols-outlined text-primary text-3xl">mood</span>
 </div>
+<a class="flex items-center justify-center bg-secondary-container text-on-secondary-container rounded-full p-3 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">music_note</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">auto_awesome_motion</span>
+</a>
+<a class="flex items-center justify-center text-on-surface-variant p-3 hover:scale-110 transition-transform mt-auto" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
 </nav>
 </body></html>

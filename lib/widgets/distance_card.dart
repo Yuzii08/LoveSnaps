@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../core/theme.dart';
 import '../models/couple_model.dart';
@@ -27,7 +27,7 @@ class DistanceCard extends ConsumerWidget {
     final isManual = couple.useManualDistance;
     final isTogether = couple.manualStatus == 'together';
     final displayText = isManual
-        ? (isTogether ? 'Together 💑' : 'Apart 💌')
+        ? (isTogether ? '0 miles' : 'unknown miles')
         : distanceStr;
 
     final recentMissYou = couple.lastMissYouSentAt != null &&
@@ -36,143 +36,85 @@ class DistanceCard extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: LoveSnapsColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: LoveSnapsShadows.marshmallowShadowMedium,
-        border: recentMissYou 
-            ? Border.all(color: LoveSnapsColors.tertiary, width: 2) 
-            : null,
+        color: LoveSnapsColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: LoveSnapsShadows.marshmallowShadowCard,
       ),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          // Graphic section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: LoveSnapsColors.primaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_rounded,
-                  color: LoveSnapsColors.primary,
-                ),
-              ),
-              
-              Expanded(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Dashed line representation using simple Container mapping
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Flex(
-                          direction: Axis.horizontal,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: List.generate(
-                            (constraints.constrainWidth() / 8).floor(),
-                            (_) => SizedBox(
-                              width: 4,
-                              height: 2,
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: LoveSnapsColors.primaryContainer,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    // Distance badge
-                    Container(
-                      color: LoveSnapsColors.surfaceContainerLowest,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        displayText,
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: LoveSnapsColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: LoveSnapsColors.secondaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_rounded,
-                  color: LoveSnapsColors.secondary,
-                ),
-              ),
-            ],
+          // Background abstract map icon hint
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Icon(
+              Icons.map_rounded,
+              size: 120,
+              color: LoveSnapsColors.primary.withOpacity(0.05),
+            ),
           ),
-
-          const SizedBox(height: 24),
-
-          // Action Button
-          if (recentMissYou)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: LoveSnapsColors.tertiaryContainer,
-                borderRadius: BorderRadius.circular(9999),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
                 children: [
-                  const Text('💌', style: TextStyle(fontSize: 24)),
+                  const Icon(Icons.location_on_rounded, color: LoveSnapsColors.pinkAccent, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    'Your partner misses you!',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: LoveSnapsColors.onTertiaryContainer,
-                      fontSize: 18,
+                    'DISTANCE',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: LoveSnapsColors.onSurfaceVariant,
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ],
               ),
-            ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: 1500.ms, color: Colors.white54)
-          else
-            GestureDetector(
-              onTap: onMissYou,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: LoveSnapsColors.tertiaryFixedDim,
-                  borderRadius: BorderRadius.circular(9999),
-                  boxShadow: LoveSnapsShadows.marshmallowGlow,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.favorite_rounded, color: LoveSnapsColors.tertiary),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Send a nudge',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: LoveSnapsColors.tertiary, // text-on-tertiary-fixed approximation
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 8),
+              Text(
+                displayText,
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  color: LoveSnapsColors.primary,
+                  height: 1.1,
+                  fontSize: 32,
                 ),
               ),
-            ).animate().scale(duration: 200.ms, curve: Curves.easeOut),
+              Text(
+                isTogether ? 'together' : 'apart',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: LoveSnapsColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9999),
+                  boxShadow: recentMissYou ? [] : LoveSnapsShadows.marshmallowShadowBtn,
+                ),
+                child: ElevatedButton(
+                  onPressed: onMissYou,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: recentMissYou ? LoveSnapsColors.primaryContainer : LoveSnapsColors.pinkAccent,
+                    foregroundColor: recentMissYou ? LoveSnapsColors.primary : Colors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(recentMissYou ? Icons.mark_email_read_rounded : Icons.favorite_rounded, size: 24),
+                      const SizedBox(width: 8),
+                      Text(recentMissYou ? 'Partner missed you!' : 'Miss You'),
+                    ],
+                  ),
+                ),
+              ).animate(target: recentMissYou ? 1 : 0).shimmer(duration: 1500.ms, color: Colors.white54),
+            ],
+          ),
         ],
       ),
     );

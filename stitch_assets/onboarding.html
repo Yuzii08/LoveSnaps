@@ -6,143 +6,156 @@
 <title>LoveSnaps - Onboarding</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    "colors": {
-                        "error": "#ba1a1a",
-                        "primary-fixed": "#e1e1f5",
-                        "on-secondary-container": "#3b6a6f",
-                        "tertiary-container": "#ffe0e3",
-                        "error-container": "#ffdad6",
-                        "surface-variant": "#e2e2e9",
-                        "secondary-fixed": "#bbebf1",
-                        "primary-container": "#e6e6fa",
-                        "on-tertiary": "#ffffff",
-                        "on-primary-fixed": "#191b29",
-                        "tertiary-fixed-dim": "#fcb3be",
-                        "on-background": "#191c20",
-                        "background": "#f9f9ff",
-                        "on-surface": "#191c20",
-                        "surface-container-lowest": "#ffffff",
-                        "on-tertiary-fixed-variant": "#6b3741",
-                        "surface-dim": "#d9d9e0",
-                        "on-secondary-fixed-variant": "#1d4d53",
-                        "secondary-container": "#b8e8ee",
-                        "on-tertiary-fixed": "#360c17",
-                        "surface-tint": "#5c5d6e",
-                        "surface-container": "#ededf4",
-                        "surface-container-highest": "#e2e2e9",
-                        "outline-variant": "#c7c5cc",
-                        "inverse-on-surface": "#f0f0f7",
-                        "tertiary": "#874e58",
-                        "on-secondary": "#ffffff",
-                        "inverse-surface": "#2e3036",
-                        "secondary": "#37656b",
-                        "primary": "#5c5d6e",
-                        "surface-bright": "#f9f9ff",
-                        "on-tertiary-container": "#915761",
-                        "outline": "#77767d",
-                        "primary-fixed-dim": "#c5c5d8",
-                        "on-error": "#ffffff",
-                        "surface": "#f9f9ff",
-                        "tertiary-fixed": "#ffd9de",
-                        "secondary-fixed-dim": "#9fcfd5",
-                        "on-surface-variant": "#46464c",
-                        "on-error-container": "#93000a",
-                        "on-primary-fixed-variant": "#444655",
-                        "surface-container-high": "#e7e8ee",
-                        "inverse-primary": "#c5c5d8",
+                    colors: {
+                        "inverse-surface": "#2e3134",
                         "on-primary": "#ffffff",
-                        "surface-container-low": "#f3f3fa",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#39734b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f2f3f8",
+                        "surface": "#f8f9fe",
+                        "surface-dim": "#d8dadf",
+                        "primary-fixed-dim": "#c5c5d8",
+                        "on-tertiary-fixed-variant": "#15512c",
+                        "surface-container-high": "#e7e8ed",
+                        "surface-variant": "#e1e2e7",
+                        "tertiary": "#306a42",
+                        "outline": "#77767d",
+                        "background": "#f8f9fe",
+                        "on-error-container": "#93000a",
+                        "primary": "#5c5d6e",
+                        "on-secondary-fixed-variant": "#134c64",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#b3f1bf",
+                        "on-error": "#ffffff",
+                        "on-background": "#191c1f",
+                        "on-surface-variant": "#46464c",
+                        "secondary-container": "#afe1fe",
+                        "tertiary-fixed-dim": "#97d5a4",
+                        "outline-variant": "#c7c5cc",
                         "on-primary-container": "#656677",
-                        "on-secondary-fixed": "#001f23"
+                        "surface-container-highest": "#e1e2e7",
+                        "surface-bright": "#f8f9fe",
+                        "on-secondary-fixed": "#001e2b",
+                        "surface-container": "#eceef3",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#5c5d6e",
+                        "secondary-fixed": "#c2e8ff",
+                        "on-secondary-container": "#32657e",
+                        "secondary": "#31647d",
+                        "inverse-on-surface": "#eff0f5",
+                        "secondary-fixed-dim": "#9ccdea",
+                        "on-tertiary-fixed": "#00210d",
+                        "on-primary-fixed": "#191b29",
+                        "primary-container": "#e6e6fa",
+                        "primary-fixed": "#e1e1f5",
+                        "inverse-primary": "#c5c5d8",
+                        "tertiary-container": "#b7f6c4",
+                        "on-surface": "#191c1f",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#444655"
                     },
-                    "borderRadius": {
+                    borderRadius: {
                         "DEFAULT": "1rem",
                         "lg": "2rem",
                         "xl": "3rem",
                         "full": "9999px"
                     },
-                    "spacing": {
-                        "md": "24px",
+                    spacing: {
                         "container-padding": "24px",
-                        "base": "8px",
-                        "xs": "4px",
+                        "stack-sm": "12px",
+                        "unit": "8px",
                         "gutter": "16px",
-                        "sm": "12px",
-                        "lg": "40px",
-                        "xl": "64px"
+                        "stack-md": "20px"
                     },
-                    "fontFamily": {
-                        "headline-md": ["Quicksand"],
-                        "body-md": ["Plus Jakarta Sans"],
+                    fontFamily: {
                         "headline-lg": ["Quicksand"],
-                        "headline-lg-mobile": ["Quicksand"],
+                        "label-bold": ["Quicksand"],
                         "display-lg": ["Quicksand"],
-                        "body-lg": ["Plus Jakarta Sans"],
-                        "label-md": ["Plus Jakarta Sans"],
-                        "label-sm": ["Plus Jakarta Sans"]
+                        "body-lg": ["Be Vietnam Pro"],
+                        "title-md": ["Quicksand"],
+                        "headline-lg-mobile": ["Quicksand"],
+                        "body-sm": ["Be Vietnam Pro"]
                     },
-                    "fontSize": {
-                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600" }],
-                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    fontSize: {
+                        "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+                        "label-bold": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "title-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "headline-lg-mobile": ["28px", { lineHeight: "34px", fontWeight: "700" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }]
+                    },
+                    boxShadow: {
+                        'marshmallow-card': '0px 8px 24px rgba(204, 204, 255, 0.2)',
+                        'marshmallow-btn': '0px 12px 32px rgba(255, 182, 193, 0.3)',
+                    },
+                    backgroundImage: {
+                        'lilac-gradient': 'linear-gradient(135deg, #f8f9fe 0%, #e6e6fa 100%)',
                     }
                 }
             }
         }
     </script>
+</head>
+<body class="bg-lilac-gradient min-h-screen text-on-background font-body-lg antialiased overflow-hidden selection:bg-secondary-container selection:text-on-secondary-container">
+<div class="min-h-screen flex flex-col justify-between items-center p-container-padding relative max-w-md mx-auto">
+<!-- Background Orbs -->
+<div class="absolute top-[-10%] left-[-10%] w-64 h-64 bg-primary-container rounded-full blur-[80px] opacity-60 pointer-events-none"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-80 h-80 bg-secondary-container rounded-full blur-[100px] opacity-40 pointer-events-none"></div>
+<!-- Top Section -->
+<div class="w-full flex justify-center mt-12 z-10">
+<img alt="LoveSnaps Logo" class="w-48 h-auto object-contain drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf-BrTiR4U_yEb4mTmaRsmgVTXmltmwE7QOb3CFA2oI6m67X0YbL4xrsZxjjjtQ3pcs3Az5syMtz6L2Payvjlrpr6viPcPLATjMPAfwglr4W1h1CIre4cmuG5YgdH37NaW80r8Grb6YrreBOlHgtwfZgYpT6sMeVz99WMY-OTOy_vvwYyHJas9AkwQC-tbADGkPqPkT4t4gbVZub-PE8I01RBDH-E38AsNHUVrusjUs9nJbSfOnBmbcL2WYwt-uZP7Hyad1tFe3WI"/>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col items-center justify-center w-full z-10 gap-stack-md mt-8">
+<!-- Illustration Box -->
+<div class="relative w-full aspect-square max-w-[280px] bg-surface/60 backdrop-blur-md rounded-xl p-6 shadow-marshmallow-card flex items-center justify-center overflow-hidden transition-transform hover:scale-[1.02] duration-300">
+<img class="w-full h-full object-contain z-10 animate-[float_4s_ease-in-out_infinite]" data-alt="A cute, kawaii-style illustration of two anthropomorphic chibi hearts. One is a soft lavender purple and the other is a soft blush pink. They are reaching out towards each other in a warm embrace. A bright, sparkling white starburst sits perfectly between them, signifying connection. The background is completely transparent, allowing the soft gradient of the app to show through. The style is deeply affectionate, tactile, and reminiscent of Japanese stationery stickers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPa-qw93yflhlfftdM_DeySutq8GISSowuC0hoDxXL3qpOor-_qXwybQT9WRwop3xgMKTWzpQeJVii3LVLNy33xAZ-uypEeijmkVxAtiOfLeZd2MCmfVeL1fkXYDlafp2m8R-5So7kjulYfFNtzj8pXwVdC78D5pFF-oBWi5zIdrXMfX_vHqPrn7KT7xKicTETOLnCQr-BRS7vurZQsfMqCVmIGDKDuN4HW4XetlaDwQNFMFqg7CQvWovhrCuGX7s-tLYmR9Tequ0"/>
+<!-- Decorative internal elements -->
+<div class="absolute inset-0 border-[3px] border-white/40 rounded-xl pointer-events-none"></div>
+<div class="absolute top-4 right-4 w-3 h-3 bg-white rounded-full opacity-50 animate-pulse"></div>
+<div class="absolute bottom-6 left-8 w-2 h-2 bg-white rounded-full opacity-30"></div>
+</div>
+<!-- Text Content -->
+<div class="text-center mt-6 flex flex-col gap-stack-sm max-w-[300px]">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">
+                    Let's get you two connected <span class="inline-block animate-[spin_4s_linear_infinite]">💫</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant opacity-80">
+                    A cozy space for just the two of you.
+                </p>
+</div>
+</div>
+<!-- Bottom Action -->
+<div class="w-full pb-8 z-10 flex flex-col items-center">
+<button class="w-[90%] max-w-[320px] bg-[#ffb6c1] text-white font-title-md text-title-md py-4 px-8 rounded-full shadow-marshmallow-btn transform transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group">
+<span>Get Started</span>
+<span class="material-symbols-outlined text-white transition-transform group-hover:translate-x-1" style="font-variation-settings: 'FILL' 1;">
+                    arrow_forward
+                </span>
+</button>
+<div class="mt-6 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary transition-all duration-300"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30 transition-all duration-300"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30 transition-all duration-300"></div>
+</div>
+</div>
+</div>
 <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #e6e6fa 0%, #f9f9ff 50%, #ffe0e3 100%);
-        }
-        .marshmallow-shadow {
-            box-shadow: 0 32px 64px -12px rgba(230, 230, 250, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-        }
-        .bounce-hover:hover {
-            transform: scale(1.05);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
     </style>
-</head>
-<body class="min-h-screen gradient-bg flex flex-col font-body-md text-on-background relative overflow-hidden">
-<!-- Decorative background elements -->
-<div class="absolute top-10 left-10 w-32 h-32 bg-white/40 rounded-full blur-3xl"></div>
-<div class="absolute bottom-20 right-10 w-48 h-48 bg-primary-container/40 rounded-full blur-3xl"></div>
-<main class="flex-grow flex flex-col items-center justify-center p-container-padding z-10 w-full max-w-md mx-auto">
-<!-- Logo -->
-<div class="mb-xl animate-[bounce_3s_ease-in-out_infinite]">
-<img alt="LoveSnaps Logo" class="w-48 h-auto object-contain drop-shadow-md" src="https://lh3.googleusercontent.com/aida/AP1WRLtIbfua5z2JHveFB4INyucdTuD__0qfsgvj7xTi_HX7FZ6zt4IbsBWtvtUxMaftjHore3PRg7h8bDmJOXQY3pSGtpPIVj7hyRVdOLofm2yl1efGLNZIV8__srs55rEtTbJYc4Ghi4dgt9SUTtG_GsqpwDxSEsBnCK-oSqF0OGnsyWeSxUl2M2f4I0xaSuVBVeVsfTNPyTxlLzvFC55JOodikiciVUeASf__y8QJuhAtqGwLpnB8BwaheAs"/>
-</div>
-<!-- Illustration Canvas -->
-<div class="w-full max-w-sm aspect-square bg-white/60 backdrop-blur-xl rounded-full marshmallow-shadow mb-lg flex items-center justify-center relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-tr from-primary-container/20 to-transparent pointer-events-none"></div>
-<img class="w-[80%] h-[80%] object-contain animate-[pulse_4s_ease-in-out_infinite]" data-alt="Two adorable, chubby chibi hearts holding hands and smiling warmly. One heart is soft blush pink, the other is gentle lavender. They are floating in a cozy, bright white space with subtle glowing sparkles around them. 3D rendered style with plush toy textures, pastel color palette, soft lighting, and high visual appeal for a cute relationship app. Huggable, soft, and inviting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ-TRK7DSr-Q9TOnnPNtG6YhQzMrQwPdoRUwbgWmf3O8xEGygZYUiquHq3t0fS1MT5tcv4zPHvIalyN24CHpK7h5hzK52BSTXYbY500r8fRFAQvDeJ8NKFsJrBR2bp1qhHk2rrPJbE7Ir7GX1wCp7KknJHrlr_f-cJGAcI3zMHpDbYTaOPieYR8pcjAou0xNhpyVHYRhKEynzjv9iCmuduCg3gVfd9tcXa6p2HpMq3Vl-JaRCnN7B4"/>
-</div>
-<!-- Copy & Action -->
-<div class="text-center w-full mt-sm">
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary mb-sm tracking-tight">Let's get you two connected <span class="inline-block animate-[spin_4s_linear_infinite]">💫</span></h1>
-<p class="font-body-md text-body-md text-on-surface-variant mb-lg opacity-80">Create a cozy space for just the two of you to share moments, memories, and little surprises.</p>
-<button class="w-full bg-tertiary-container hover:bg-tertiary-fixed-dim text-on-tertiary-container font-headline-md text-headline-md py-4 px-8 rounded-full bounce-hover transition-all duration-300 relative overflow-hidden group shadow-[0_8px_16px_rgba(255,224,227,0.6)]">
-<span class="relative z-10 flex items-center justify-center gap-2">
-                    Get Started
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
-</span>
-<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-</button>
-<p class="mt-md font-label-sm text-label-sm text-on-surface-variant/60">
-                Already have an account? <a class="text-primary font-bold hover:underline" href="#">Log in</a>
-</p>
-</div>
-</main>
 </body></html>
