@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
+
 
 import '../core/constants.dart';
 import '../models/couple_model.dart';
@@ -25,13 +25,21 @@ class LocationService {
   // ── Permission ─────────────────────────────────────────────────────────
 
   Future<bool> requestLocationPermission() async {
-    final status = await Permission.locationWhenInUse.request();
-    return status.isGranted;
+    try {
+      final status = await Geolocator.requestPermission();
+      return status == LocationPermission.always || status == LocationPermission.whileInUse;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> hasLocationPermission() async {
-    final status = await Permission.locationWhenInUse.status;
-    return status.isGranted;
+    try {
+      final status = await Geolocator.checkPermission();
+      return status == LocationPermission.always || status == LocationPermission.whileInUse;
+    } catch (e) {
+      return false;
+    }
   }
 
   // ── Location Update ────────────────────────────────────────────────────

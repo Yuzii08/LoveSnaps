@@ -23,6 +23,7 @@ class NotificationService {
   // ── Initialization ─────────────────────────────────────────────────────
 
   Future<void> initialize() async {
+    if (kIsWeb) return;
     // Request permissions
     final settings = await _messaging.requestPermission(
       alert: true,
@@ -77,6 +78,7 @@ class NotificationService {
   // ── Permission Check ───────────────────────────────────────────────────
 
   Future<bool> hasPermission() async {
+    if (kIsWeb) return false;
     final settings = await _messaging.getNotificationSettings();
     return settings.authorizationStatus == AuthorizationStatus.authorized ||
         settings.authorizationStatus == AuthorizationStatus.provisional;

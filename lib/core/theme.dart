@@ -3,46 +3,47 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// LoveSnaps Kawaii Connection Palette (from Stitch design system)
 class LoveSnapsColors {
-  // Primary (vibrant lavender)
-  static const primary = Color(0xFF7A66FF);
+  // Primary (Rich, vibrant soft purple)
+  static const primary = Color(0xFF8B5CF6);
   static const onPrimary = Color(0xFFFFFFFF);
-  static const primaryContainer = Color(0xFFF2EFFF);
-  static const onPrimaryContainer = Color(0xFF4A34E3);
+  static const primaryContainer = Color(0xFFEDE9FE);
+  static const onPrimaryContainer = Color(0xFF5B21B6);
 
-  // Secondary (vibrant soft bubblegum pink)
-  static const secondary = Color(0xFFFFA2B2);
+  // Secondary (Vivid cute pink)
+  static const secondary = Color(0xFFF472B6);
   static const onSecondary = Color(0xFFFFFFFF);
-  static const secondaryContainer = Color(0xFFFFF0F3);
-  static const onSecondaryContainer = Color(0xFFC93D5A);
+  static const secondaryContainer = Color(0xFFFCE7F3);
+  static const onSecondaryContainer = Color(0xFF9D174D);
 
-  // Tertiary (mint green)
-  static const tertiary = Color(0xFF5ED582);
+  // Tertiary (Fresh mint green)
+  static const tertiary = Color(0xFF34D399);
   static const onTertiary = Color(0xFFFFFFFF);
-  static const tertiaryContainer = Color(0xFFEDFFF2);
-  static const onTertiaryContainer = Color(0xFF1B6A34);
+  static const tertiaryContainer = Color(0xFFD1FAE5);
+  static const onTertiaryContainer = Color(0xFF065F46);
 
   // Custom Accents
-  static const pinkAccent = Color(0xFFFFA2B2);
-  static const pinkAccentDark = Color(0xFFFF7A91);
+  static const pinkAccent = Color(0xFFFB7185);
+  static const pinkAccentDark = Color(0xFFE11D48);
+  static const peachAccent = Color(0xFFFDA4AF);
 
-  // Background / Surface
-  static const background = Color(0xFFFAF9FF); // Fresh, light lilac white
-  static const onBackground = Color(0xFF1A172B);
+  // Background / Surface (Soft milky white)
+  static const background = Color(0xFFFDFBFF); 
+  static const onBackground = Color(0xFF1E1B4B);
   static const surface = Color(0xFFFFFFFF);
-  static const onSurface = Color(0xFF1A172B);
-  static const surfaceVariant = Color(0xFFF5F4FA);
-  static const onSurfaceVariant = Color(0xFF5A567D);
+  static const onSurface = Color(0xFF1E1B4B);
+  static const surfaceVariant = Color(0xFFF5F3FF);
+  static const onSurfaceVariant = Color(0xFF6D28D9);
   static const surfaceContainerLowest = Color(0xFFFFFFFF);
 
   // Error
-  static const error = Color(0xFFBA1A1A);
+  static const error = Color(0xFFE11D48);
   static const onError = Color(0xFFFFFFFF);
-  static const errorContainer = Color(0xFFFFDAD6);
-  static const onErrorContainer = Color(0xFF93000A);
+  static const errorContainer = Color(0xFFFFE4E6);
+  static const onErrorContainer = Color(0xFF9F1239);
 
   // Outline
-  static const outline = Color(0xFF8E8A9F);
-  static const outlineVariant = Color(0xFFDFDDEC);
+  static const outline = Color(0xFFA78BFA);
+  static const outlineVariant = Color(0xFFDDD6FE);
 }
 
 class LoveSnapsTheme {
@@ -222,29 +223,32 @@ class LoveSnapsTheme {
 
 /// Custom shadows defined in the Stitch design system
 class LoveSnapsShadows {
-  // 0px 8px 24px rgba(204, 204, 255, 0.2)
+  // Ultra-soft plush shadow for cards
   static final marshmallowShadowCard = [
     BoxShadow(
-      color: const Color(0x33CCCCFF),
-      blurRadius: 24,
-      offset: const Offset(0, 8),
+      color: const Color(0xFF8B5CF6).withOpacity(0.08),
+      blurRadius: 32,
+      spreadRadius: 4,
+      offset: const Offset(0, 12),
     ),
   ];
 
-  // 0px 12px 32px rgba(255, 182, 193, 0.3)
+  // Bright pink glowing shadow for buttons
   static final marshmallowShadowBtn = [
     BoxShadow(
-      color: const Color(0x4DFFB6C1),
-      blurRadius: 32,
-      offset: const Offset(0, 12),
+      color: const Color(0xFFF472B6).withOpacity(0.3),
+      blurRadius: 24,
+      spreadRadius: 2,
+      offset: const Offset(0, 8),
     ),
   ];
 
   // Tertiary glow for milestones
   static final marshmallowGlow = [
     BoxShadow(
-      color: const Color(0x4Db7f6c4),
+      color: const Color(0xFF34D399).withOpacity(0.25),
       blurRadius: 28,
+      spreadRadius: 2,
       offset: const Offset(0, 8),
     ),
   ];

@@ -12,17 +12,23 @@ class DaysCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final days = couple.daysTogetherCount;
-    // Calculate progress for heart fill (e.g. 75%)
-    final progress = couple.nextMilestone != null 
-        ? ((days % 100) / 100).clamp(0.0, 1.0) 
-        : 0.75; // Default to 0.75 for visual if no milestone
+    // Calculate progress to next anniversary (out of 365 days)
+    final progress = (days % 365) / 365.0;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
       decoration: BoxDecoration(
-        color: LoveSnapsColors.primaryContainer,
-        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFFFF0F3), // Soft bubblegum
+            Color(0xFFF2EFFF), // Soft lavender
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
         boxShadow: LoveSnapsShadows.marshmallowShadowCard,
       ),
       child: Stack(
@@ -31,32 +37,32 @@ class DaysCard extends StatelessWidget {
         children: [
           // Decorative Blobs
           Positioned(
-            top: -40,
-            left: -40,
+            top: -50,
+            left: -30,
             child: Container(
-              width: 128,
-              height: 128,
+              width: 140,
+              height: 140,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
             ),
           ),
           Positioned(
-            bottom: -40,
+            bottom: -60,
             right: -40,
             child: Container(
-              width: 160,
-              height: 160,
+              width: 180,
+              height: 180,
               decoration: BoxDecoration(
-                color: const Color(0xFFc2e8ff).withOpacity(0.5),
+                color: const Color(0xFFc2e8ff).withOpacity(0.4),
                 shape: BoxShape.circle,
               ),
             ),
           ),
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
               child: const SizedBox(),
             ),
           ),
@@ -70,43 +76,66 @@ class DaysCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   color: LoveSnapsColors.primary,
                   height: 1.1,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               Text(
-                'together 🌙',
+                'together ☁️💕',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: LoveSnapsColors.onPrimaryContainer,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               
               // Filled Heart Mask
-              SizedBox(
-                width: 64,
-                height: 64,
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: LoveSnapsColors.pinkAccent.withOpacity(0.3),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 8),
+                    )
+                  ],
+                ),
+                width: 80,
+                height: 80,
                 child: ClipPath(
                   clipper: _HeartClipper(),
                   child: Container(
-                    color: LoveSnapsColors.surfaceVariant,
+                    color: Colors.white.withOpacity(0.7),
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 1000),
-                        curve: Curves.easeOut,
+                        duration: const Duration(milliseconds: 1500),
+                        curve: Curves.easeOutBack,
                         width: double.infinity,
-                        height: 64 * progress,
-                        color: LoveSnapsColors.pinkAccent,
+                        height: 80 * progress,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              LoveSnapsColors.pinkAccent,
+                              LoveSnapsColors.pinkAccentDark,
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
                 '${(progress * 100).toInt()}% to Anniversary',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: LoveSnapsColors.primary.withOpacity(0.7),
-                  fontWeight: FontWeight.bold,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: LoveSnapsColors.primary.withOpacity(0.8),
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],

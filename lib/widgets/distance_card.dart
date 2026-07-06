@@ -36,10 +36,18 @@ class DistanceCard extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: LoveSnapsColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white,
+            LoveSnapsColors.primaryContainer.withOpacity(0.5),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white, width: 2),
         boxShadow: LoveSnapsShadows.marshmallowShadowCard,
       ),
       child: Stack(
@@ -47,12 +55,12 @@ class DistanceCard extends ConsumerWidget {
         children: [
           // Background abstract map icon hint
           Positioned(
-            right: -20,
-            bottom: -20,
+            right: -10,
+            bottom: 0,
             child: Icon(
-              Icons.map_rounded,
-              size: 120,
-              color: LoveSnapsColors.primary.withOpacity(0.05),
+              Icons.location_city_rounded,
+              size: 100,
+              color: LoveSnapsColors.primary.withOpacity(0.04),
             ),
           ),
           
@@ -62,34 +70,54 @@ class DistanceCard extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.location_on_rounded, color: LoveSnapsColors.pinkAccent, size: 20),
-                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: LoveSnapsColors.pinkAccent.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.location_on_rounded, color: LoveSnapsColors.pinkAccent, size: 20),
+                  ),
+                  const SizedBox(width: 12),
                   Text(
                     'DISTANCE',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: LoveSnapsColors.onSurfaceVariant,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
                 displayText,
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   color: LoveSnapsColors.primary,
                   height: 1.1,
-                  fontSize: 32,
+                  fontSize: 34,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              Text(
-                isTogether ? 'together' : 'apart',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: LoveSnapsColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(
+                    isTogether ? Icons.favorite_rounded : Icons.flight_takeoff_rounded,
+                    color: LoveSnapsColors.tertiary,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    isTogether ? 'together right now' : 'miles apart',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: LoveSnapsColors.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               
               Container(
                 decoration: BoxDecoration(
@@ -108,7 +136,10 @@ class DistanceCard extends ConsumerWidget {
                     children: [
                       Icon(recentMissYou ? Icons.mark_email_read_rounded : Icons.favorite_rounded, size: 24),
                       const SizedBox(width: 8),
-                      Text(recentMissYou ? 'Partner missed you!' : 'Miss You'),
+                      Text(
+                        recentMissYou ? 'Partner missed you!' : 'Miss You',
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                      ),
                     ],
                   ),
                 ),

@@ -24,6 +24,7 @@ class WidgetService {
     required bool streakAtRisk,
     required bool missYouReceived,
   }) async {
+    if (kIsWeb) return;
     try {
       await Future.wait([
         HomeWidget.saveWidgetData<int>(
@@ -73,6 +74,7 @@ class WidgetService {
 
   /// Clears the miss-you received flag after animation is shown.
   Future<void> clearMissYouFlag() async {
+    if (kIsWeb) return;
     await HomeWidget.saveWidgetData<bool>(
         AppConstants.widgetKeyMissYouReceived, false);
   }
@@ -81,6 +83,7 @@ class WidgetService {
 
   /// Registers a callback to handle widget interactions when app is foregrounded.
   void registerWidgetClickCallback(void Function(Uri?) callback) {
+    if (kIsWeb) return;
     HomeWidget.widgetClicked.listen(callback);
   }
 }

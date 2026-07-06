@@ -163,12 +163,13 @@ class CoupleService {
     });
   }
 
-  Future<void> shareJam(String coupleId, String title, String artist) async {
+  Future<void> shareJam(String coupleId, String title, String artist, {String? imageUrl}) async {
     await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
       'currentJamTitle': title,
       'currentJamArtist': artist,
       'currentJamSharedBy': _uid,
       'currentJamSharedAt': FieldValue.serverTimestamp(),
+      'currentJamImageUrl': imageUrl,
     });
   }
 

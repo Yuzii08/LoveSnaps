@@ -104,6 +104,36 @@ class SnapService {
         .set(snap.toFirestore());
   }
 
+  /// Deletes a snap from Firestore and Supabase Storage
+  Future<void> deleteSnap(String coupleId, String snapId) async {
+    try {
+      // 1. Delete from Firestore
+      await _db
+          .collection(AppConstants.couplesCollection)
+          .doc(coupleId)
+          .collection('snaps')
+          .doc(snapId)
+          .delete();
+      
+      // 2. Delete from Supabase Storage if configured
+      if (AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL') {
+        final path = 'couples/$coupleId/$snapId.jpg';
+        try {
+          await Supabase.instance.client.storage
+              .from(AppConstants.supabaseSnapsBucket)
+              .remove([path]);
+          debugPrint('Deleted snap file from Supabase Storage: $path');
+        } catch (storageErr) {
+          debugPrint('Error deleting from Supabase Storage (might not exist): $storageErr');
+        }
+      }
+      debugPrint('Deleted snap metadata from Firestore: $snapId');
+    } catch (e) {
+      debugPrint('Error in deleteSnap: $e');
+      rethrow;
+    }
+  }
+
   /// Streams list of snaps sorted by timestamp descending
   Stream<List<SnapModel>> streamSnaps(String coupleId) {
     return _db

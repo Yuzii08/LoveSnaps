@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:http/http.dart' as http;
 
 import '../../core/theme.dart';
 import '../../models/couple_model.dart';
@@ -19,15 +21,13 @@ class JamScreen extends ConsumerStatefulWidget {
 
 class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
-  final _titleController = TextEditingController();
-  final _artistController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _rotationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 12),
     );
     
     // Start rotating if someone is playing music
@@ -50,81 +50,42 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   @override
   void dispose() {
     _rotationController.dispose();
-    _titleController.dispose();
-    _artistController.dispose();
     super.dispose();
   }
 
-  Future<void> _updateJam() async {
-    final title = _titleController.text.trim();
-    final artist = _artistController.text.trim();
-    if (title.isEmpty || artist.isEmpty) return;
-
-    try {
-      await ref.read(coupleServiceProvider).shareJam(
-        widget.couple.coupleId,
-        title,
-        artist,
-      );
-      if (!mounted) return;
-      _titleController.clear();
-      _artistController.clear();
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('🎵 Posted your current jam!'),
-          backgroundColor: LoveSnapsColors.pinkAccent,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to share: $e'),
-          backgroundColor: LoveSnapsColors.error,
-        ),
-      );
-    }
-  }
-
-  void _showUpdateJamDialog() {
-    showDialog(
+  void _showUpdateJamBottomSheet() {
+    showModalBottomSheet(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('🎵 What are you listening to?'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Song Title',
-                  hintText: 'e.g. As It Was',
-                ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _MusicSearchSheet(
+        onSelectSong: (title, artist, imageUrl) async {
+          Navigator.pop(context);
+          try {
+            await ref.read(coupleServiceProvider).shareJam(
+                  widget.couple.coupleId,
+                  title,
+                  artist,
+                  imageUrl: imageUrl,
+                );
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('🎵 Shared "$title" as your current jam!'),
+                backgroundColor: LoveSnapsColors.pinkAccent,
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _artistController,
-                decoration: const InputDecoration(
-                  labelText: 'Artist',
-                  hintText: 'e.g. Harry Styles',
-                ),
+            );
+          } catch (e) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to share: $e'),
+                backgroundColor: LoveSnapsColors.error,
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: _updateJam,
-              child: const Text('Share Jam'),
-            ),
-          ],
-        );
-      },
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -160,14 +121,14 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                       RotationTransition(
                         turns: _rotationController,
                         child: Container(
-                          width: 200,
-                          height: 200,
+                          width: 220,
+                          height: 220,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.grey[900],
                             boxShadow: [
                               BoxShadow(
-                                color: LoveSnapsColors.primary.withOpacity(0.3),
+                                color: LoveSnapsColors.primary.withOpacity(0.2),
                                 blurRadius: 30,
                                 offset: const Offset(0, 10),
                               ),
@@ -175,22 +136,33 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                             gradient: RadialGradient(
                               colors: [
                                 Colors.grey[800]!,
-                                Colors.black.withOpacity(0.8),
+                                Colors.black.withOpacity(0.9),
                                 Colors.black,
                               ],
                             ),
                           ),
                           child: Center(
                             child: Container(
-                              width: 70,
-                              height: 70,
-                              decoration: BoxDecoration(
+                              width: 80,
+                              height: 80,
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: LoveSnapsColors.primaryContainer,
-                                border: Border.all(color: Colors.white, width: 4),
+                                color: Colors.white,
                               ),
-                              child: const Center(
-                                child: Text('🎵', style: TextStyle(fontSize: 24)),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(40),
+                                child: (widget.couple.currentJamImageUrl != null &&
+                                        widget.couple.currentJamImageUrl!.isNotEmpty)
+                                    ? Image.network(
+                                        widget.couple.currentJamImageUrl!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => const Center(
+                                          child: Text('🎵', style: TextStyle(fontSize: 28)),
+                                        ),
+                                      )
+                                    : const Center(
+                                        child: Text('🎵', style: TextStyle(fontSize: 28)),
+                                      ),
                               ),
                             ),
                           ),
@@ -221,10 +193,11 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          '$sharedByName shared this jam',
+                          '$sharedByName shared this jam 🎧',
                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: LoveSnapsColors.secondary,
                             letterSpacing: 0.8,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ] else ...[
@@ -237,8 +210,9 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'Share what you are listening to right now!',
+                          'Search & share what you are listening to right now!',
                           textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ],
                     ],
@@ -249,7 +223,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                 
                 // tactile control button
                 GestureDetector(
-                  onTap: _showUpdateJamDialog,
+                  onTap: _showUpdateJamBottomSheet,
                   child: Container(
                     width: double.infinity,
                     height: 64,
@@ -262,10 +236,10 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.share_rounded, color: Colors.white),
+                          Icon(Icons.search_rounded, color: Colors.white),
                           SizedBox(width: 12),
                           Text(
-                            'SHARE WHAT I\'M LISTENING TO',
+                            'SEARCH & SHARE MUSIC',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -283,6 +257,228 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
           ),
         ),
       ],
+    );
+  }
+}
+
+class _MusicSearchSheet extends StatefulWidget {
+  final Function(String title, String artist, String? imageUrl) onSelectSong;
+
+  const _MusicSearchSheet({required this.onSelectSong});
+
+  @override
+  State<_MusicSearchSheet> createState() => _MusicSearchSheetState();
+}
+
+class _MusicSearchSheetState extends State<_MusicSearchSheet> {
+  final _searchController = TextEditingController();
+  List<dynamic> _searchResults = [];
+  bool _isLoading = false;
+  String _errorMessage = '';
+
+  Future<void> _search(String query) async {
+    if (query.trim().isEmpty) return;
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+      _searchResults = [];
+    });
+
+    try {
+      final response = await http.get(Uri.parse(
+          'https://saavn.sumit.co/api/search/songs?query=${Uri.encodeComponent(query)}'));
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        if (json['success'] == true && json['data'] != null) {
+          setState(() {
+            _searchResults = json['data']['results'] as List? ?? [];
+            _isLoading = false;
+          });
+          return;
+        }
+      }
+      setState(() {
+        _errorMessage = 'No songs found';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Search error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      padding: EdgeInsets.only(
+        top: 24,
+        left: 24,
+        right: 24,
+        bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      decoration: const BoxDecoration(
+        color: LoveSnapsColors.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 48,
+              height: 6,
+              decoration: BoxDecoration(
+                color: LoveSnapsColors.outlineVariant,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            '🎵 Find your Music Jam',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: LoveSnapsColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: _search,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search_rounded, color: LoveSnapsColors.primary),
+                    hintText: 'Search songs on JioSaavn...',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: LoveSnapsColors.pinkAccent,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                  onPressed: () => _search(_searchController.text),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _errorMessage.isNotEmpty
+                    ? Center(child: Text(_errorMessage, style: const TextStyle(color: Colors.grey)))
+                    : _searchResults.isEmpty
+                        ? const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('🔍', style: TextStyle(fontSize: 40)),
+                                SizedBox(height: 12),
+                                Text(
+                                  'Search for your favorite songs\nand share it with your partner!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: _searchResults.length,
+                            itemBuilder: (context, index) {
+                              final song = _searchResults[index];
+                              final songName = song['name'] ?? 'Unknown Song';
+                              
+                              // Extract artist
+                              String artistName = 'Unknown Artist';
+                              if (song['artists'] != null && song['artists']['primary'] != null) {
+                                final primaryList = song['artists']['primary'] as List;
+                                if (primaryList.isNotEmpty) {
+                                  artistName = primaryList.map((a) => a['name']).join(', ');
+                                }
+                              }
+
+                              // Extract album image
+                              String? artworkUrl;
+                              final images = song['image'] as List?;
+                              if (images != null && images.isNotEmpty) {
+                                artworkUrl = images.last['url'] as String?;
+                              }
+
+                              return Card(
+                                elevation: 0,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                color: Colors.white,
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  leading: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: artworkUrl != null
+                                        ? Image.network(
+                                            artworkUrl,
+                                            width: 48,
+                                            height: 48,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) => Container(
+                                              width: 48,
+                                              height: 48,
+                                              color: LoveSnapsColors.primaryContainer,
+                                              child: const Icon(Icons.music_note_rounded),
+                                            ),
+                                          )
+                                        : Container(
+                                            width: 48,
+                                            height: 48,
+                                            color: LoveSnapsColors.primaryContainer,
+                                            child: const Icon(Icons.music_note_rounded),
+                                          ),
+                                  ),
+                                  title: Text(
+                                    songName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Text(
+                                    artistName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                  ),
+                                  trailing: const Icon(Icons.chevron_right_rounded, color: LoveSnapsColors.pinkAccent),
+                                  onTap: () {
+                                    widget.onSelectSong(songName, artistName, artworkUrl);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+          ),
+        ],
+      ),
     );
   }
 }
