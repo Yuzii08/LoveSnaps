@@ -124,10 +124,30 @@ class _HeartClipper extends CustomClipper<Path> {
     double height = size.height;
 
     Path path = Path();
-    path.moveTo(0.5 * width, height * 0.35);
-    path.cubicTo(0.2 * width, height * 0.1, -0.25 * width, height * 0.6, 0.5 * width, height * 0.95);
-    path.moveTo(0.5 * width, height * 0.35);
-    path.cubicTo(0.8 * width, height * 0.1, 1.25 * width, height * 0.6, 0.5 * width, height * 0.95);
+    path.moveTo(width / 2, height / 5);
+    // Left curve
+    path.cubicTo(
+      5 * width / 14, 0,
+      0, 0,
+      0, 2 * height / 5,
+    );
+    path.cubicTo(
+      0, 3 * height / 5,
+      width / 7, 5 * height / 7,
+      width / 2, height,
+    );
+    // Right curve
+    path.cubicTo(
+      6 * width / 7, 5 * height / 7,
+      width, 3 * height / 5,
+      width, 2 * height / 5,
+    );
+    path.cubicTo(
+      width, 0,
+      9 * width / 14, 0,
+      width / 2, height / 5,
+    );
+    path.close();
     return path;
   }
 

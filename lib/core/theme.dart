@@ -3,46 +3,46 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// LoveSnaps Kawaii Connection Palette (from Stitch design system)
 class LoveSnapsColors {
-  // Primary
-  static const primary = Color(0xFF5c5d6e);
-  static const onPrimary = Color(0xFFffffff);
-  static const primaryContainer = Color(0xFFe6e6fa);
-  static const onPrimaryContainer = Color(0xFF656677);
+  // Primary (vibrant lavender)
+  static const primary = Color(0xFF7A66FF);
+  static const onPrimary = Color(0xFFFFFFFF);
+  static const primaryContainer = Color(0xFFF2EFFF);
+  static const onPrimaryContainer = Color(0xFF4A34E3);
 
-  // Secondary
-  static const secondary = Color(0xFF31647d);
-  static const onSecondary = Color(0xFFffffff);
-  static const secondaryContainer = Color(0xFFAFE1FE);
-  static const onSecondaryContainer = Color(0xFF32657e);
+  // Secondary (vibrant soft bubblegum pink)
+  static const secondary = Color(0xFFFFA2B2);
+  static const onSecondary = Color(0xFFFFFFFF);
+  static const secondaryContainer = Color(0xFFFFF0F3);
+  static const onSecondaryContainer = Color(0xFFC93D5A);
 
-  // Tertiary
-  static const tertiary = Color(0xFF306a42);
-  static const onTertiary = Color(0xFFffffff);
-  static const tertiaryContainer = Color(0xFFb7f6c4);
-  static const onTertiaryContainer = Color(0xFF39734b);
+  // Tertiary (mint green)
+  static const tertiary = Color(0xFF5ED582);
+  static const onTertiary = Color(0xFFFFFFFF);
+  static const tertiaryContainer = Color(0xFFEDFFF2);
+  static const onTertiaryContainer = Color(0xFF1B6A34);
 
   // Custom Accents
-  static const pinkAccent = Color(0xFFffb6c1);
-  static const pinkAccentDark = Color(0xFFff9a9e);
+  static const pinkAccent = Color(0xFFFFA2B2);
+  static const pinkAccentDark = Color(0xFFFF7A91);
 
   // Background / Surface
-  static const background = Color(0xFFf8f9fe); // Very soft lilac/white
-  static const onBackground = Color(0xFF191c1f);
-  static const surface = Color(0xFFffffff); // True white for cards
-  static const onSurface = Color(0xFF191c1f);
-  static const surfaceVariant = Color(0xFFf2f3f8);
-  static const onSurfaceVariant = Color(0xFF46464c);
-  static const surfaceContainerLowest = Color(0xFFffffff);
+  static const background = Color(0xFFFAF9FF); // Fresh, light lilac white
+  static const onBackground = Color(0xFF1A172B);
+  static const surface = Color(0xFFFFFFFF);
+  static const onSurface = Color(0xFF1A172B);
+  static const surfaceVariant = Color(0xFFF5F4FA);
+  static const onSurfaceVariant = Color(0xFF5A567D);
+  static const surfaceContainerLowest = Color(0xFFFFFFFF);
 
   // Error
-  static const error = Color(0xFFba1a1a);
-  static const onError = Color(0xFFffffff);
-  static const errorContainer = Color(0xFFffdad6);
-  static const onErrorContainer = Color(0xFF93000a);
+  static const error = Color(0xFFBA1A1A);
+  static const onError = Color(0xFFFFFFFF);
+  static const errorContainer = Color(0xFFFFDAD6);
+  static const onErrorContainer = Color(0xFF93000A);
 
   // Outline
-  static const outline = Color(0xFF77767d);
-  static const outlineVariant = Color(0xFFc7c5cc);
+  static const outline = Color(0xFF8E8A9F);
+  static const outlineVariant = Color(0xFFDFDDEC);
 }
 
 class LoveSnapsTheme {
