@@ -332,10 +332,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               data: (snaps) {
                                 return Row(
                                   children: [
-                                    ...snaps.map((snap) => Padding(
-                                      padding: const EdgeInsets.only(right: 16),
-                                      child: _buildSnapCard(snap),
-                                    )),
+                                    if (snaps.isEmpty) ...[
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 16),
+                                        child: _buildSnapPlaceholder(
+                                          'Capture a selfie!',
+                                          '🤳',
+                                          [const Color(0xFFFFD1DC), const Color(0xFFFFC0CB)],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 16),
+                                        child: _buildSnapPlaceholder(
+                                          'What are you eating?',
+                                          '🍰',
+                                          [const Color(0xFFFFF0C2), const Color(0xFFFFE599)],
+                                        ),
+                                      ),
+                                    ] else
+                                      ...snaps.map((snap) => Padding(
+                                        padding: const EdgeInsets.only(right: 16),
+                                        child: _buildSnapCard(snap),
+                                      )),
                                     // Add Snap button
                                     Container(
                                       width: 140,
@@ -570,7 +588,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildSnapPlaceholder(String label, String assetPath) {
+  Widget _buildSnapPlaceholder(String label, String emoji, List<Color> gradient) {
     return Container(
       width: 140,
       height: 180,
@@ -584,21 +602,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: LoveSnapsColors.surfaceVariant,
+              gradient: LinearGradient(
+                colors: gradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(16),
             ),
-            // We would put the NetworkImage or AssetImage here.
+            child: Center(
+              child: Text(
+                emoji,
+                style: const TextStyle(fontSize: 40),
+              ),
+            ),
           ),
           Positioned(
             bottom: 8,
             left: 8,
+            right: 8,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: LoveSnapsColors.primary)),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: LoveSnapsColors.primary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ],
