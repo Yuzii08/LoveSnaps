@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:http/http.dart' as http;
+import 'package:just_audio/just_audio.dart';
 
 import '../../core/theme.dart';
 import '../../models/couple_model.dart';
@@ -21,6 +22,7 @@ class JamScreen extends ConsumerStatefulWidget {
 
 class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
+  final _player = AudioPlayer();
 
   @override
   void initState() {
@@ -30,26 +32,19 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
       duration: const Duration(seconds: 12),
     );
     
-    // Start rotating if someone is playing music
-    if (widget.couple.currentJamTitle != null && widget.couple.currentJamTitle!.isNotEmpty) {
-      _rotationController.repeat();
-    }
-  }
-
-  @override
-  void didUpdateWidget(JamScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final hasMusic = widget.couple.currentJamTitle != null && widget.couple.currentJamTitle!.isNotEmpty;
-    if (hasMusic && !_rotationController.isAnimating) {
-      _rotationController.repeat();
-    } else if (!hasMusic && _rotationController.isAnimating) {
-      _rotationController.stop();
-    }
+    _player.playingStream.listen((playing) {
+      if (playing) {
+        _rotationController.repeat();
+      } else {
+        _rotationController.stop();
+      }
+    });
   }
 
   @override
   void dispose() {
     _rotationController.dispose();
+    _player.dispose();
     super.dispose();
   }
 
@@ -59,7 +54,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _MusicSearchSheet(
-        onSelectSong: (title, artist, imageUrl) async {
+        onSelectSong: (title, artist, imageUrl, downloadUrl) async {
           Navigator.pop(context);
           try {
             await ref.read(coupleServiceProvider).shareJam(
@@ -67,6 +62,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                   title,
                   artist,
                   imageUrl: imageUrl,
+                  downloadUrl: downloadUrl,
                 );
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
@@ -97,9 +93,14 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
     final isSharedByMe = widget.couple.currentJamSharedBy == myUid;
     final sharedByName = isSharedByMe ? 'You' : 'Your partner';
 
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
+    return StreamBuilder<bool>(
+      stream: _player.playingStream,
+      builder: (context, snapshot) {
+        final isPlaying = snapshot.data ?? false;
+        
+        return CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -222,36 +223,97 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                 const SizedBox(height: 32),
                 
                 // tactile control button
-                GestureDetector(
-                  onTap: _showUpdateJamBottomSheet,
-                  child: Container(
-                    width: double.infinity,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: LoveSnapsColors.pinkAccent,
-                      borderRadius: BorderRadius.circular(9999),
-                      boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
-                    ),
-                    child: const Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.search_rounded, color: Colors.white),
-                          SizedBox(width: 12),
-                          Text(
-                            'SEARCH & SHARE MUSIC',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.8,
+                if (hasJam) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (isPlaying) {
+                              await _player.pause();
+                            } else {
+                              if (_player.audioSource == null && widget.couple.currentJamDownloadUrl != null) {
+                                await _player.setUrl(widget.couple.currentJamDownloadUrl!);
+                              }
+                              await _player.play();
+                            }
+                          },
+                          child: Container(
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: isPlaying ? Colors.grey[200] : LoveSnapsColors.primary,
+                              borderRadius: BorderRadius.circular(32),
+                              boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded, color: isPlaying ? LoveSnapsColors.primary : Colors.white),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    isPlaying ? 'PAUSE' : 'JOIN JAM',
+                                    style: TextStyle(
+                                      color: isPlaying ? LoveSnapsColors.primary : Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: _showUpdateJamBottomSheet,
+                        child: Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: LoveSnapsColors.pinkAccent,
+                            shape: BoxShape.circle,
+                            boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
+                          ),
+                          child: const Icon(Icons.search_rounded, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ).animate(delay: 200.ms).fadeIn().scale(),
+                ] else ...[
+                  GestureDetector(
+                    onTap: _showUpdateJamBottomSheet,
+                    child: Container(
+                      width: double.infinity,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: LoveSnapsColors.pinkAccent,
+                        borderRadius: BorderRadius.circular(9999),
+                        boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
+                      ),
+                      child: const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_rounded, color: Colors.white),
+                            SizedBox(width: 12),
+                            Text(
+                              'START A JAM',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ).animate(delay: 200.ms).fadeIn().scale(),
+                  ).animate(delay: 200.ms).fadeIn().scale(),
+                ]
               ],
             ),
           ),
@@ -259,10 +321,12 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
       ],
     );
   }
+);
+  }
 }
 
 class _MusicSearchSheet extends StatefulWidget {
-  final Function(String title, String artist, String? imageUrl) onSelectSong;
+  final Function(String title, String artist, String? imageUrl, String? downloadUrl) onSelectSong;
 
   const _MusicSearchSheet({required this.onSelectSong});
 
@@ -425,6 +489,14 @@ class _MusicSearchSheetState extends State<_MusicSearchSheet> {
                                 artworkUrl = images.last['url'] as String?;
                               }
 
+                              // Extract download url
+                              String? downloadUrl;
+                              final dlUrls = song['downloadUrl'] as List?;
+                              if (dlUrls != null && dlUrls.isNotEmpty) {
+                                final preferred = dlUrls.firstWhere((url) => (url['quality'] as String).contains('160'), orElse: () => dlUrls.last);
+                                downloadUrl = preferred['url'] as String?;
+                              }
+
                               return Card(
                                 elevation: 0,
                                 margin: const EdgeInsets.only(bottom: 12),
@@ -470,7 +542,7 @@ class _MusicSearchSheetState extends State<_MusicSearchSheet> {
                                   ),
                                   trailing: const Icon(Icons.chevron_right_rounded, color: LoveSnapsColors.pinkAccent),
                                   onTap: () {
-                                    widget.onSelectSong(songName, artistName, artworkUrl);
+                                    widget.onSelectSong(songName, artistName, artworkUrl, downloadUrl);
                                   },
                                 ),
                               );

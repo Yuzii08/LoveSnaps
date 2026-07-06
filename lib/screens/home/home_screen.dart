@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _currentTab = 0;
+  Timer? _locationTimer;
 
   @override
   void initState() {
@@ -48,7 +50,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UpdateService.checkForUpdates(context);
       ref.read(notificationServiceProvider).initialize();
+
+      _locationTimer = Timer.periodic(const Duration(minutes: 15), (_) {
+        final couple = ref.read(coupleStreamProvider).value;
+        if (couple != null) {
+          ref.read(locationServiceProvider).updateMyLocation(couple.coupleId);
+        }
+      });
+      
+      Future.delayed(const Duration(seconds: 2), () {
+        final couple = ref.read(coupleStreamProvider).value;
+        if (couple != null) {
+          ref.read(locationServiceProvider).updateMyLocation(couple.coupleId);
+        }
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _locationTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _sendMissYou() async {
@@ -106,15 +128,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
 
     final partnerName = 'Partner';
+    final missYouReceived = couple.lastMissYouSentBy == partnerUid;
 
     ref.read(widgetServiceProvider).updateWidgets(
+      coupleId: couple.coupleId,
       streakCount: couple.streakCount,
       daysCount: couple.daysTogetherCount,
       partnerName: partnerName,
       distance: distanceStr,
       manualStatus: couple.manualStatus,
       streakAtRisk: atRisk,
-      missYouReceived: false,
+      missYouReceived: missYouReceived,
     );
   }
 

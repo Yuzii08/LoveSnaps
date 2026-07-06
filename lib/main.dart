@@ -24,8 +24,25 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 @pragma('vm:entry-point')
 void widgetBackgroundCallback(Uri? uri) async {
   if (uri?.host == 'missyou') {
-    // Handled by WidgetService when app launches via deep link
     debugPrint('Widget background callback: miss you tapped');
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      final coupleId = await HomeWidget.getWidgetData<String>('couple_id');
+      if (uid != null && coupleId != null) {
+        await FirebaseFirestore.instance.collection(AppConstants.couplesCollection).doc(coupleId).update({
+          'lastMissYouSentAt': FieldValue.serverTimestamp(),
+          'lastMissYouSentBy': uid,
+        });
+        debugPrint('Successfully updated miss you in background!');
+      } else {
+        debugPrint('Could not update miss you in background: uid=$uid, coupleId=$coupleId');
+      }
+    } catch (e) {
+      debugPrint('Error updating miss you in background: $e');
+    }
   }
 }
 

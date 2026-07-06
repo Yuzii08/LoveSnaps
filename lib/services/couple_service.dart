@@ -163,13 +163,23 @@ class CoupleService {
     });
   }
 
-  Future<void> shareJam(String coupleId, String title, String artist, {String? imageUrl}) async {
+  Future<void> shareJam(
+    String coupleId,
+    String title,
+    String artist, {
+    String? imageUrl,
+    String? downloadUrl,
+  }) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
     await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
       'currentJamTitle': title,
       'currentJamArtist': artist,
-      'currentJamSharedBy': _uid,
-      'currentJamSharedAt': FieldValue.serverTimestamp(),
       'currentJamImageUrl': imageUrl,
+      'currentJamDownloadUrl': downloadUrl,
+      'currentJamSharedBy': uid,
+      'currentJamSharedAt': FieldValue.serverTimestamp(),
     });
   }
 

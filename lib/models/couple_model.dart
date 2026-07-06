@@ -48,6 +48,7 @@ class CoupleModel extends Equatable {
   final String? currentJamSharedBy;
   final DateTime? currentJamSharedAt;
   final String? currentJamImageUrl;
+  final String? currentJamDownloadUrl;
   final DateTime createdAt;
 
   const CoupleModel({
@@ -69,6 +70,7 @@ class CoupleModel extends Equatable {
     this.currentJamSharedBy,
     this.currentJamSharedAt,
     this.currentJamImageUrl,
+    this.currentJamDownloadUrl,
     required this.createdAt,
   });
 
@@ -146,6 +148,7 @@ class CoupleModel extends Equatable {
       currentJamSharedBy: data['currentJamSharedBy'] as String?,
       currentJamSharedAt: (data['currentJamSharedAt'] as Timestamp?)?.toDate(),
       currentJamImageUrl: data['currentJamImageUrl'] as String?,
+      currentJamDownloadUrl: data['currentJamDownloadUrl'] as String?,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -177,6 +180,7 @@ class CoupleModel extends Equatable {
           ? Timestamp.fromDate(currentJamSharedAt!)
           : null,
       'currentJamImageUrl': currentJamImageUrl,
+      'currentJamDownloadUrl': currentJamDownloadUrl,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -198,6 +202,7 @@ class CoupleModel extends Equatable {
     String? currentJamSharedBy,
     DateTime? currentJamSharedAt,
     String? currentJamImageUrl,
+    String? currentJamDownloadUrl,
   }) {
     return CoupleModel(
       coupleId: coupleId,
@@ -220,6 +225,7 @@ class CoupleModel extends Equatable {
       currentJamSharedBy: currentJamSharedBy ?? this.currentJamSharedBy,
       currentJamSharedAt: currentJamSharedAt ?? this.currentJamSharedAt,
       currentJamImageUrl: currentJamImageUrl ?? this.currentJamImageUrl,
+      currentJamDownloadUrl: currentJamDownloadUrl ?? this.currentJamDownloadUrl,
       createdAt: createdAt,
     );
   }

@@ -16,6 +16,7 @@ class WidgetService {
 
   /// Pushes all widget data to shared storage and triggers a widget refresh.
   Future<void> updateWidgets({
+    required String coupleId,
     required int streakCount,
     required int daysCount,
     required String partnerName,
@@ -27,6 +28,7 @@ class WidgetService {
     if (kIsWeb) return;
     try {
       await Future.wait([
+        HomeWidget.saveWidgetData<String>('couple_id', coupleId),
         HomeWidget.saveWidgetData<int>(
           AppConstants.widgetKeyStreakCount, streakCount),
         HomeWidget.saveWidgetData<int>(
