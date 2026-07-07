@@ -50,17 +50,21 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   child: userAsync.when(
                     data: (user) {
-                      if (user == null) return const Text('Loading user data...');
+                      if (user == null)
+                        return const Text('Loading user data...');
                       return Column(
                         children: [
                           Row(
                             children: [
                               CircleAvatar(
                                 radius: 30,
-                                backgroundColor: LoveSnapsColors.primaryContainer,
+                                backgroundColor:
+                                    LoveSnapsColors.primaryContainer,
                                 child: Text(
-                                  user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : 'U',
-                                  style: TextStyle(
+                                  user.displayName.isNotEmpty
+                                      ? user.displayName[0].toUpperCase()
+                                      : 'U',
+                                  style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                     color: LoveSnapsColors.primary,
@@ -74,14 +78,17 @@ class ProfileScreen extends ConsumerWidget {
                                   children: [
                                     Text(
                                       user.displayName,
-                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                           ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       user.email,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: LoveSnapsColors.onSurfaceVariant,
                                       ),
                                     ),
@@ -93,12 +100,14 @@ class ProfileScreen extends ConsumerWidget {
                           const Divider(height: 32),
                           coupleAsync.when(
                             data: (couple) {
-                              if (couple == null) return const SizedBox.shrink();
+                              if (couple == null)
+                                return const SizedBox.shrink();
                               return Row(
                                 children: [
-                                  const Icon(Icons.favorite_rounded, color: LoveSnapsColors.pinkAccent),
+                                  const Icon(Icons.favorite_rounded,
+                                      color: LoveSnapsColors.pinkAccent),
                                   const SizedBox(width: 12),
-                                  Text(
+                                  const Text(
                                     'Couple ID: ',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
@@ -107,7 +116,7 @@ class ProfileScreen extends ConsumerWidget {
                                   ),
                                   Text(
                                     couple.coupleId,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontFamily: 'Courier',
                                       fontWeight: FontWeight.bold,
                                       color: LoveSnapsColors.primary,
@@ -122,7 +131,8 @@ class ProfileScreen extends ConsumerWidget {
                         ],
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (err, _) => Text('Error: $err'),
                   ),
                 ).animate().fadeIn(duration: 400.ms),
@@ -130,59 +140,66 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
 
                 // Anniversary Settings Card
-                coupleAsync.when(
-                  data: (couple) {
-                    if (couple == null) return const SizedBox.shrink();
-                    final hasStartDate = couple.relationshipStartDate != null;
-                    return Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: LoveSnapsColors.primaryContainer.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(
-                          color: LoveSnapsColors.primaryContainer,
-                          width: 2,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Text('📅', style: TextStyle(fontSize: 32)),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Anniversary Date',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  hasStartDate
-                                      ? DateFormat('MMMM d, yyyy').format(couple.relationshipStartDate!)
-                                      : 'Not set yet',
-                                  style: TextStyle(
-                                    color: LoveSnapsColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                coupleAsync
+                    .when(
+                      data: (couple) {
+                        if (couple == null) return const SizedBox.shrink();
+                        final hasStartDate =
+                            couple.relationshipStartDate != null;
+                        return Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: LoveSnapsColors.primaryContainer
+                                .withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(28),
+                            border: Border.all(
+                              color: LoveSnapsColors.primaryContainer,
+                              width: 2,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit_calendar_rounded, color: LoveSnapsColors.primary),
-                            onPressed: () => context.push('/start-date'),
+                          child: Row(
+                            children: [
+                              const Text('📅', style: TextStyle(fontSize: 32)),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Anniversary Date',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      hasStartDate
+                                          ? DateFormat('MMMM d, yyyy').format(
+                                              couple.relationshipStartDate!)
+                                          : 'Not set yet',
+                                      style: const TextStyle(
+                                        color: LoveSnapsColors.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit_calendar_rounded,
+                                    color: LoveSnapsColors.primary),
+                                onPressed: () => context.push('/start-date'),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, __) => const SizedBox.shrink(),
-                ).animate(delay: 100.ms).fadeIn(),
+                        );
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
+                    )
+                    .animate(delay: 100.ms)
+                    .fadeIn(),
 
                 const SizedBox(height: 32),
 
@@ -190,22 +207,25 @@ class ProfileScreen extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => context.push('/home/settings'),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: LoveSnapsShadows.marshmallowShadowCard,
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
-                        Icon(Icons.settings_rounded, color: LoveSnapsColors.onSurfaceVariant),
-                        const SizedBox(width: 16),
-                        const Text(
+                        Icon(Icons.settings_rounded,
+                            color: LoveSnapsColors.onSurfaceVariant),
+                        SizedBox(width: 16),
+                        Text(
                           'Additional Settings',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        const Spacer(),
-                        Icon(Icons.chevron_right_rounded, color: LoveSnapsColors.onSurfaceVariant),
+                        Spacer(),
+                        Icon(Icons.chevron_right_rounded,
+                            color: LoveSnapsColors.onSurfaceVariant),
                       ],
                     ),
                   ),
@@ -220,7 +240,8 @@ class ProfileScreen extends ConsumerWidget {
                     context.go('/auth');
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.red[50],
                       borderRadius: BorderRadius.circular(20),

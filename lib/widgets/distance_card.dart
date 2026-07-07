@@ -26,9 +26,7 @@ class DistanceCard extends ConsumerWidget {
 
     final isManual = couple.useManualDistance;
     final isTogether = couple.manualStatus == 'together';
-    final displayText = isManual
-        ? (isTogether ? '0 miles' : 'unknown miles')
-        : distanceStr;
+    final hideMileage = isManual || distanceKm < 0;
 
     final recentMissYou = couple.lastMissYouSentAt != null &&
         couple.lastMissYouSentBy != myUid &&
@@ -90,33 +88,54 @@ class DistanceCard extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
-                displayText,
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  color: LoveSnapsColors.primary,
-                  height: 1.1,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w800,
+              if (!hideMileage) ...[
+                Text(
+                  distanceStr,
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    color: LoveSnapsColors.primary,
+                    height: 1.1,
+                    fontSize: 34,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(
-                    isTogether ? Icons.favorite_rounded : Icons.flight_takeoff_rounded,
-                    color: LoveSnapsColors.tertiary,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    isTogether ? 'together right now' : 'miles apart',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: LoveSnapsColors.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      isTogether ? Icons.favorite_rounded : Icons.flight_takeoff_rounded,
+                      color: LoveSnapsColors.tertiary,
+                      size: 18,
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 8),
+                    Text(
+                      isTogether ? 'together right now' : 'miles apart',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: LoveSnapsColors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Icon(
+                      isTogether ? Icons.favorite_rounded : Icons.explore_off_rounded,
+                      color: LoveSnapsColors.pinkAccent,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      isTogether ? 'Together 💑' : 'Apart 💌',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        color: LoveSnapsColors.primary,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 28),
               
               Container(

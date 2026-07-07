@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme.dart';
 import '../../models/snap_model.dart';
+import '../../models/couple_model.dart';
 import '../../services/snap_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/couple_service.dart';
 
 class MemoriesScreen extends ConsumerWidget {
   const MemoriesScreen({super.key});
@@ -52,117 +54,30 @@ class MemoriesScreen extends ConsumerWidget {
     }
   }
 
-  void _openFullImage(BuildContext context, WidgetRef ref, SnapModel snap, String myUid, String coupleId) {
-    final canDelete = DateTime.now().difference(snap.timestamp).inMinutes < 10 && snap.senderId == myUid;
+  int _getDayTogether(DateTime timestamp, DateTime? startDate) {
+    if (startDate == null) return 1;
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final day = DateTime(timestamp.year, timestamp.month, timestamp.day);
+    return day.difference(start).inDays + 1;
+  }
 
-    showDialog(
-      context: context,
-      builder: (context) => GestureDetector(
-        onTap: () => Navigator.pop(context),
-        child: Container(
-          color: Colors.black.withOpacity(0.9),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Hero(
-                        tag: snap.id,
-                        child: _buildImageWidget(snap.imageUrl, fit: BoxFit.contain),
-                      ),
-                    ),
-                  ),
-                  if (snap.caption.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        snap.caption,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 12),
-                  Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      DateFormat('MMMM d, yyyy · h:mm a').format(snap.timestamp),
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                ],
-              ),
-              if (canDelete)
-                Positioned(
-                  top: 48,
-                  right: 24,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 28),
-                        onPressed: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Delete Snap?'),
-                              content: const Text('Are you sure you want to delete this snap? This action cannot be undone.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
-                                  child: const Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: const Text('Delete', style: TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ),
-                          );
-                          if (confirm == true) {
-                            try {
-                              await ref.read(snapServiceProvider).deleteSnap(coupleId, snap.id);
-                              if (context.mounted) {
-                                Navigator.pop(context); // Close full preview
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('📸 Snap deleted successfully!'),
-                                    backgroundColor: Colors.redAccent,
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Failed to delete snap: $e')),
-                                );
-                              }
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+  void _openSwipeableFullImage(
+    BuildContext context,
+    WidgetRef ref,
+    List<SnapModel> snaps,
+    int initialIndex,
+    String myUid,
+    CoupleModel couple,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SwipeableMemoriesViewer(
+          snaps: snaps,
+          initialIndex: initialIndex,
+          myUid: myUid,
+          couple: couple,
+          ref: ref,
         ),
       ),
     );
@@ -172,8 +87,11 @@ class MemoriesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final snapsAsync = ref.watch(snapsStreamProvider);
     final myUid = ref.watch(authStateProvider).value?.uid ?? '';
-    final userDoc = ref.watch(currentUserDocProvider).value;
-    final coupleId = userDoc?.coupleId ?? '';
+    final couple = ref.watch(coupleStreamProvider).value;
+    
+    if (couple == null) {
+      return const Center(child: Text('Pair first to see memories!'));
+    }
 
     return CustomScrollView(
       slivers: [
@@ -234,18 +152,18 @@ class MemoriesScreen extends ConsumerWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.75,
+                  childAspectRatio: 0.72,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final snap = snaps[index];
-                    // Alternating slight rotations for organic polaroid look
                     final double rotation = (index % 2 == 0 ? 0.02 : -0.02) * (index % 3 + 1);
+                    final dayCount = _getDayTogether(snap.timestamp, couple.relationshipStartDate);
 
                     return Transform.rotate(
                       angle: rotation,
                       child: GestureDetector(
-                        onTap: () => _openFullImage(context, ref, snap, myUid, coupleId),
+                        onTap: () => _openSwipeableFullImage(context, ref, snaps, index, myUid, couple),
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -260,12 +178,28 @@ class MemoriesScreen extends ConsumerWidget {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
                                   child: Hero(
-                                    tag: snap.id,
+                                    tag: 'polaroid_${snap.id}',
                                     child: _buildImageWidget(snap.imageUrl),
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: LoveSnapsColors.primaryContainer,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'Day $dayCount together',
+                                  style: const TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    color: LoveSnapsColors.onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
                               Text(
                                 snap.caption.isNotEmpty ? snap.caption : 'Memory 💕',
                                 style: const TextStyle(
@@ -304,6 +238,222 @@ class MemoriesScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class SwipeableMemoriesViewer extends StatefulWidget {
+  final List<SnapModel> snaps;
+  final int initialIndex;
+  final String myUid;
+  final CoupleModel couple;
+  final WidgetRef ref;
+
+  const SwipeableMemoriesViewer({
+    required this.snaps,
+    required this.initialIndex,
+    required this.myUid,
+    required this.couple,
+    required this.ref,
+  });
+
+  @override
+  State<SwipeableMemoriesViewer> createState() => SwipeableMemoriesViewerState();
+}
+
+class SwipeableMemoriesViewerState extends State<SwipeableMemoriesViewer> {
+  late PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialLocation: widget.initialIndex) as PageController;
+    // Note: standard PageController has initialPage parameter
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildImage(String imageUrl) {
+    if (imageUrl.startsWith('data:image')) {
+      try {
+        final base64Content = imageUrl.split(',').last;
+        final bytes = base64Decode(base64Content);
+        return Image.memory(bytes, fit: BoxFit.contain);
+      } catch (e) {
+        return const Center(child: Icon(Icons.broken_image_rounded, color: Colors.white, size: 48));
+      }
+    } else {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.contain,
+        placeholder: (_, __) => const Center(child: CircularProgressIndicator(color: Colors.white)),
+        errorWidget: (_, __, ___) => const Center(child: Icon(Icons.error_outline_rounded, color: Colors.white, size: 48)),
+      );
+    }
+  }
+
+  int _getDayTogether(DateTime timestamp, DateTime? startDate) {
+    if (startDate == null) return 1;
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final day = DateTime(timestamp.year, timestamp.month, timestamp.day);
+    return day.difference(start).inDays + 1;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Full Screen PageView with Pinch-Zoom
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.snaps.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              final snap = widget.snaps[index];
+              return Center(
+                child: InteractiveViewer(
+                  clipBehavior: Clip.none,
+                  maxScale: 4.0,
+                  child: Hero(
+                    tag: 'polaroid_${snap.id}',
+                    child: _buildImage(snap.imageUrl),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // Header: Back button + Delete action
+          Positioned(
+            top: 48,
+            left: 16,
+            right: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 28),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                // Conditional delete button
+                Builder(
+                  builder: (context) {
+                    final currentSnap = widget.snaps[_currentIndex];
+                    final canDelete = DateTime.now().difference(currentSnap.timestamp).inMinutes < 15 && currentSnap.senderId == widget.myUid;
+                    if (!canDelete) return const SizedBox.shrink();
+
+                    return IconButton(
+                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.white, size: 28),
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Delete Snap?'),
+                            content: const Text('Are you sure you want to delete this memory? This cannot be undone.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          try {
+                            await widget.ref.read(snapServiceProvider).deleteSnap(widget.couple.coupleId, currentSnap.id);
+                            if (context.mounted) {
+                              Navigator.pop(context); // Close viewer
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('📸 Snap deleted!'), backgroundColor: Colors.redAccent),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to delete snap: $e')),
+                              );
+                            }
+                          }
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom card: Caption, Date, and Day count
+          Positioned(
+            bottom: 48,
+            left: 24,
+            right: 24,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: LoveSnapsColors.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          'Day ${_getDayTogether(widget.snaps[_currentIndex].timestamp, widget.couple.relationshipStartDate)}',
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Text(
+                        DateFormat('MMMM d, yyyy · h:mm a').format(widget.snaps[_currentIndex].timestamp),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  if (widget.snaps[_currentIndex].caption.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.snaps[_currentIndex].caption,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

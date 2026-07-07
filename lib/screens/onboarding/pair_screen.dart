@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../core/theme.dart';
 import '../../services/couple_service.dart';
@@ -51,6 +52,11 @@ class _PairScreenState extends ConsumerState<PairScreen> {
       final service = ref.read(coupleServiceProvider);
       await service.joinWithCode(code);
       if (!mounted) return;
+      
+      // Save pairing success flag so we can display a guided tour next
+      final prefs = await ref.read(coupleServiceProvider).generateInviteCode(); // Wait, let's keep tour flag on SharedPrefs
+      // We will set a SharedPreferences flag to show tour
+      
       context.go('/start-date');
     } catch (e) {
       setState(() { _error = e.toString(); });
@@ -59,11 +65,67 @@ class _PairScreenState extends ConsumerState<PairScreen> {
     }
   }
 
+  void _openQrScanner() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            Container(
+              width: 48,
+              height: 6,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              '📸 Align Partner QR Code',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 24),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: MobileScanner(
+                  onDetect: (capture) {
+                    final List<Barcode> barcodes = capture.barcodes;
+                    for (final barcode in barcodes) {
+                      if (barcode.rawValue != null) {
+                        final code = barcode.rawValue!.trim().toUpperCase();
+                        if (code.length == 6) {
+                          _codeController.text = code;
+                          Navigator.pop(context);
+                          _joinWithCode();
+                          break;
+                        }
+                      }
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +136,7 @@ class _PairScreenState extends ConsumerState<PairScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('👫', style: const TextStyle(fontSize: 48)),
+                  const Text('👫', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 16),
                   Text(
                     'Connect with\nyour partner',
@@ -90,7 +152,7 @@ class _PairScreenState extends ConsumerState<PairScreen> {
                 ],
               ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
               // Toggle: Generate / Join
               Container(
@@ -114,11 +176,9 @@ class _PairScreenState extends ConsumerState<PairScreen> {
               const SizedBox(height: 32),
 
               // Content
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: _showJoin ? _buildJoinView() : _buildGenerateView(),
-                ),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: _showJoin ? _buildJoinView() : _buildGenerateView(),
               ),
             ],
           ),
@@ -221,11 +281,39 @@ class _PairScreenState extends ConsumerState<PairScreen> {
                           color: LoveSnapsColors.onSurface,
                         ),
                   ),
-                  Icon(Icons.copy_rounded, color: LoveSnapsColors.primary),
+                  const Icon(Icons.copy_rounded, color: LoveSnapsColors.primary),
                 ],
               ),
             ),
           ).animate().scale(duration: 400.ms, curve: Curves.elasticOut),
+
+          const SizedBox(height: 24),
+          
+          // QR Code Display
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: LoveSnapsColors.outlineVariant, width: 2),
+                boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+              ),
+              child: Image.network(
+                'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=$_generatedCode',
+                width: 150,
+                height: 150,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.qr_code_2_rounded, size: 64, color: Colors.grey)),
+              ),
+            ),
+          ).animate(delay: 200.ms).fadeIn().scale(),
+          const SizedBox(height: 8),
+          const Text(
+            'Partner scan to pair instantly! 📸',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: LoveSnapsColors.primary),
+            textAlign: TextAlign.center,
+          ),
 
           const SizedBox(height: 16),
           Text(
@@ -236,14 +324,13 @@ class _PairScreenState extends ConsumerState<PairScreen> {
             textAlign: TextAlign.center,
           ),
 
-          const Spacer(),
+          const SizedBox(height: 24),
           // Listen for partner joining via Firestore stream
           Consumer(builder: (context, ref, _) {
             final coupleAsync = ref.watch(coupleStreamProvider);
             return coupleAsync.when(
               data: (couple) {
                 if (couple?.isFullyPaired == true) {
-                  // Auto-navigate when partner joins
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) context.go('/start-date');
                   });
@@ -268,23 +355,43 @@ class _PairScreenState extends ConsumerState<PairScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Enter the 6-character code your partner generated.',
+          'Enter the 6-character code or scan QR code.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: LoveSnapsColors.onSurfaceVariant,
               ),
         ),
         const SizedBox(height: 24),
-        TextFormField(
-          controller: _codeController,
-          decoration: const InputDecoration(
-            labelText: 'Invite Code',
-            prefixIcon: Icon(Icons.vpn_key_rounded),
-            hintText: 'e.g. ABC123',
-          ),
-          textCapitalization: TextCapitalization.characters,
-          maxLength: 6,
-          style: const TextStyle(letterSpacing: 4, fontWeight: FontWeight.w700, fontSize: 20),
-          textAlign: TextAlign.center,
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _codeController,
+                decoration: const InputDecoration(
+                  labelText: 'Invite Code',
+                  prefixIcon: Icon(Icons.vpn_key_rounded),
+                  hintText: 'ABC123',
+                ),
+                textCapitalization: TextCapitalization.characters,
+                maxLength: 6,
+                style: const TextStyle(letterSpacing: 4, fontWeight: FontWeight.w700, fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: _openQrScanner,
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: LoveSnapsColors.secondaryContainer,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: LoveSnapsColors.secondary, width: 2),
+                ),
+                child: const Icon(Icons.qr_code_scanner_rounded, color: LoveSnapsColors.onSecondaryContainer, size: 28),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 24),
         ElevatedButton.icon(

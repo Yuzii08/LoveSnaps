@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme.dart';
 import '../../models/couple_model.dart';
+import '../../models/note_model.dart';
 import '../../services/auth_service.dart';
 import '../../services/couple_service.dart';
 import '../../services/streak_service.dart';
@@ -16,6 +17,7 @@ import '../../services/location_service.dart';
 import '../../services/widget_service.dart';
 import '../../services/update_service.dart';
 import '../../services/notification_service.dart';
+import '../../services/note_service.dart';
 import 'jam_screen.dart';
 import 'memories_screen.dart';
 import 'profile_screen.dart';
@@ -50,6 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UpdateService.checkForUpdates(context);
       ref.read(notificationServiceProvider).initialize();
+      _checkAndShowTour();
 
       _locationTimer = Timer.periodic(const Duration(minutes: 15), (_) {
         final couple = ref.read(coupleStreamProvider).value;
@@ -88,6 +91,608 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     } catch (_) {}
+  }
+
+  Widget? _buildResurfacingCard(List<SnapModel> snaps, String myUid, CoupleModel couple) {
+    if (snaps.isEmpty) return null;
+    final now = DateTime.now();
+    
+    SnapModel? targetSnap;
+    String timeLabel = '';
+    
+    for (final snap in snaps) {
+      final diffDays = now.difference(snap.timestamp).inDays;
+      if (diffDays >= 360 && diffDays <= 370) {
+        targetSnap = snap;
+        timeLabel = 'This time last year... ✨';
+        break;
+      }
+    }
+    
+    if (targetSnap == null) {
+      for (final snap in snaps) {
+        final diffDays = now.difference(snap.timestamp).inDays;
+        if (diffDays >= 28 && diffDays <= 32) {
+          targetSnap = snap;
+          timeLabel = 'This time last month... 🌸';
+          break;
+        }
+      }
+    }
+    
+    if (targetSnap == null) return null;
+    
+    final relationshipStart = couple.relationshipStartDate;
+    int dayCount = 1;
+    if (relationshipStart != null) {
+      final start = DateTime(relationshipStart.year, relationshipStart.month, relationshipStart.day);
+      final snapDate = DateTime(targetSnap.timestamp.year, targetSnap.timestamp.month, targetSnap.timestamp.day);
+      dayCount = snapDate.difference(start).inDays + 1;
+    }
+    
+    final finalSnap = targetSnap;
+    
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFF1F2), Color(0xFFFFE4E6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(28),
+          onTap: () {
+            final idx = snaps.indexOf(finalSnap);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SwipeableMemoriesViewer(
+                  snaps: snaps,
+                  initialIndex: idx,
+                  myUid: myUid,
+                  couple: couple,
+                  ref: ref,
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        timeLabel,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: LoveSnapsColors.pinkAccentDark,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Day $dayCount together',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: LoveSnapsColors.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        finalSnap.caption.isNotEmpty ? '"${finalSnap.caption}"' : 'A cute memory 💕',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey[700],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: finalSnap.imageUrl.startsWith('data:image')
+                      ? Image.memory(
+                          base64Decode(finalSnap.imageUrl.split(',').last),
+                          fit: BoxFit.cover,
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: finalSnap.imageUrl,
+                          fit: BoxFit.cover,
+                          errorWidget: (_, __, ___) => const Icon(Icons.broken_image),
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoodSection(CoupleModel couple, String myUid) {
+    final partnerUid = couple.partnerUid(myUid);
+    final myMood = couple.currentMoods[myUid];
+    final partnerMood = couple.currentMoods[partnerUid];
+    
+    final moods = [
+      {'emoji': '😊', 'label': 'Happy'},
+      {'emoji': '🥰', 'label': 'Loved'},
+      {'emoji': '😴', 'label': 'Tired'},
+      {'emoji': '🥺', 'label': 'Soft'},
+      {'emoji': '😢', 'label': 'Sad'},
+      {'emoji': '😡', 'label': 'Angry'},
+    ];
+
+    if (myMood == null || myMood.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+          border: Border.all(color: LoveSnapsColors.primaryContainer, width: 2),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('💭', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Text(
+                  'How are you feeling today?',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: LoveSnapsColors.primary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: moods.map((m) {
+                return GestureDetector(
+                  onTap: () async {
+                    try {
+                      await ref.read(coupleServiceProvider).setMood(couple.coupleId, m['emoji']!);
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Mood saved: ${m['emoji']} ${m['label']}! 🌟'),
+                          backgroundColor: LoveSnapsColors.pinkAccent,
+                        ),
+                      );
+                    } catch (e) {
+                      debugPrint('Set mood failed: $e');
+                    }
+                  },
+                  child: Column(
+                    children: [
+                      Text(m['emoji']!, style: const TextStyle(fontSize: 28))
+                          .animate()
+                          .scale(duration: 200.ms, curve: Curves.bounceOut),
+                      const SizedBox(height: 4),
+                      Text(
+                        m['label']!,
+                        style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black45),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        color: LoveSnapsColors.primaryContainer.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white, width: 1.5),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                const Text('✨ Moods: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: LoveSnapsColors.primary)),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                  child: Text('Me: $myMood', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                  child: Text(
+                    partnerMood != null && partnerMood.isNotEmpty
+                        ? 'Partner: $partnerMood'
+                        : 'Partner: ❓',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.calendar_month_rounded, color: LoveSnapsColors.primary, size: 20),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () => context.push('/home/mood-history'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDailyPromptCard(CoupleModel couple, String myUid, List<NoteModel> notes) {
+    final partnerUid = couple.partnerUid(myUid);
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    final todayNotes = notes.where((n) => DateFormat('yyyy-MM-dd').format(n.timestamp) == todayStr).toList();
+    final didIWriteToday = todayNotes.any((n) => n.senderId == myUid);
+    final didPartnerWriteToday = todayNotes.any((n) => n.senderId == partnerUid);
+
+    final prompts = [
+      "What is one thing I did recently that made you smile? 😊",
+      "If we could teleport anywhere right now, where would we go? ✈️",
+      "What is your favorite memory of us from last month? 💖",
+      "What is a song that reminds you of me, and why? 🎵",
+      "What is a little habit of mine that you secretly love? 🥰",
+      "Write down three things you are grateful for about us today. 🌸",
+      "Describe our perfect date night in three sentences. 🥂",
+    ];
+
+    final promptIndex = DateTime.now().difference(DateTime(DateTime.now().year, 1, 1)).inDays % prompts.length;
+    final todayPrompt = prompts[promptIndex];
+
+    if (!didIWriteToday) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFBEB),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: const Color(0xFFFDE68A), width: 2),
+          boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Text('📝', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Text(
+                  'Daily Love Prompt',
+                  style: TextStyle(
+                    fontWeight: FontWeight.extrabold,
+                    fontSize: 16,
+                    color: Colors.amber[900],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              todayPrompt,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber[950],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => _showWriteNoteBottomSheet(couple.coupleId, todayPrompt),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber[600],
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 44),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text('Write Note ✍️', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (didIWriteToday && !didPartnerWriteToday) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: const Color(0xFFBFDBFE), width: 2),
+          boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+        ),
+        child: Column(
+          children: [
+            const Text('📮', style: TextStyle(fontSize: 32)),
+            const SizedBox(height: 8),
+            Text(
+              'Your note is folded and waiting!',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.blue[900]),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'We will unlock each other\'s notes as soon as your partner responds to today\'s prompt.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.blue[700], fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFFECFDF5),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: const Color(0xFFA7F3D0), width: 2),
+        boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+      ),
+      child: Column(
+        children: [
+          const Text('💌', style: TextStyle(fontSize: 36)),
+          const SizedBox(height: 8),
+          Text(
+            'Both notes unlocked!',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.emerald[900]),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Taps are locked, check-ins are done! Tap below to open our Notes Jar.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: Colors.emerald[700], fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => context.push('/home/notes-jar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.emerald[500],
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 44),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            child: const Text('Open Notes Jar 🏺', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWriteNoteBottomSheet(String coupleId, String prompt) {
+    final noteController = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: EdgeInsets.only(
+          top: 24,
+          left: 24,
+          right: 24,
+          bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 48,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: LoveSnapsColors.outlineVariant,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              '✍️ Fold Today\'s Love Note',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: LoveSnapsColors.primary),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              prompt,
+              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[700], fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: noteController,
+              decoration: const InputDecoration(
+                hintText: 'Write down something sweet...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+              maxLength: 200,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                final txt = noteController.text.trim();
+                if (txt.isEmpty) return;
+                
+                try {
+                  await ref.read(noteServiceProvider).sendNote(coupleId, prompt, txt);
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Note submitted and checked in! 💌')),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              },
+              child: const Text('Send Note 📮'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _checkAndShowTour() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seen = prefs.getBool('seen_guided_tour') ?? false;
+    if (seen) return;
+
+    if (!mounted) return;
+    _showTourBottomSheet();
+  }
+
+  void _showTourBottomSheet() {
+    int slideIndex = 0;
+    
+    final slides = [
+      {
+        'title': 'Welcome to LoveSnaps! 👫',
+        'emoji': '🌸',
+        'text': 'A small shared world built just for the two of you. Let\'s take a 1-minute tour of your features!'
+      },
+      {
+        'title': 'Daily Snaps & Polaroid Timeline',
+        'emoji': '📸',
+        'text': 'Capture and send daily snaps. They stack in a swipeable, pinch-to-zoom timeline that counts your days together.'
+      },
+      {
+        'title': 'Daily Love Prompts & Notes Jar',
+        'emoji': '📝',
+        'text': 'Fold sweet handwritten notes by responding to daily prompts. Writing a note unlocks your partner\'s note!'
+      },
+      {
+        'title': 'Real-Time Synced Jams',
+        'emoji': '🎵',
+        'text': 'Search JioSaavn, start a Jam, and listen in sync across locations with premium queue management!'
+      },
+      {
+        'title': 'Streak & Mood Heatmaps',
+        'emoji': '🗓️',
+        'text': 'Check in daily to keep your streak flame alive, and reflect on your days with the mood heatmap calendar.'
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          final slide = slides[slideIndex];
+          final isLast = slideIndex == slides.length - 1;
+
+          return Container(
+            padding: const EdgeInsets.all(28),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(slide['emoji']!, style: const TextStyle(fontSize: 48)),
+                const SizedBox(height: 16),
+                Text(
+                  slide['title']!,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: LoveSnapsColors.primary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  slide['text']!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[700], fontSize: 13, height: 1.4, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 28),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: List.generate(slides.length, (idx) {
+                        return Container(
+                          margin: const EdgeInsets.only(right: 6),
+                          width: slideIndex == idx ? 16 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: slideIndex == idx ? LoveSnapsColors.primary : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        );
+                      }),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (isLast) {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('seen_guided_tour', true);
+                          if (context.mounted) Navigator.pop(context);
+                        } else {
+                          setModalState(() {
+                            slideIndex++;
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: LoveSnapsColors.primary,
+                        minimumSize: const Size(100, 40),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(isLast ? 'Start! 💕' : 'Next ➡️'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _checkIn(CoupleModel couple) async {
@@ -174,6 +779,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           WidgetsBinding.instance.addPostFrameCallback((_) => _syncWidgets(couple));
           final snapsAsync = ref.watch(snapsStreamProvider);
+          final notesAsync = ref.watch(notesStreamProvider);
+          final notes = notesAsync.value ?? [];
 
           Widget getBody() {
             switch (_currentTab) {
@@ -241,6 +848,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 .slideY(begin: -0.5, end: 0),
                           if (couple.isMilestoneDay) const SizedBox(height: 16),
 
+                          _buildMoodSection(couple, myUid),
+
                           // Day Counter Card
                           DaysCard(couple: couple)
                               .animate()
@@ -248,6 +857,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .slideY(begin: 0.15, end: 0),
 
                           const SizedBox(height: 16),
+
+                          snapsAsync.when(
+                            data: (snaps) {
+                              final card = _buildResurfacingCard(snaps, myUid, couple);
+                              return card ?? const SizedBox.shrink();
+                            },
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                          ),
 
                           // Grid for Streak and Jam
                           Row(
@@ -329,6 +947,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                           const SizedBox(height: 16),
 
+                          _buildDailyPromptCard(couple, myUid, notes),
+
                           // Distance Card
                           DistanceCard(
                             couple: couple,
@@ -378,9 +998,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       ...snaps.map((snap) => Padding(
                                         padding: const EdgeInsets.only(right: 16),
                                         child: GestureDetector(
-                                          onTap: () => _openFullImage(snap, myUid, couple.coupleId),
+                                          onTap: () {
+                                            final idx = snaps.indexOf(snap);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => SwipeableMemoriesViewer(
+                                                  snaps: snaps,
+                                                  initialIndex: idx,
+                                                  myUid: myUid,
+                                                  couple: couple,
+                                                  ref: ref,
+                                                ),
+                                              ),
+                                            );
+                                          },
                                           child: Hero(
-                                            tag: snap.id,
+                                            tag: 'polaroid_${snap.id}',
                                             child: _buildSnapCard(snap),
                                           ),
                                         ),

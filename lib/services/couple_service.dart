@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../core/constants.dart';
 import '../models/couple_model.dart';
@@ -180,6 +181,86 @@ class CoupleService {
       'currentJamDownloadUrl': downloadUrl,
       'currentJamSharedBy': uid,
       'currentJamSharedAt': FieldValue.serverTimestamp(),
+      'currentJamPlaying': true,
+      'currentJamPositionMs': 0,
+      'currentJamLastUpdatedMs': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  /// Updates current playback play/pause state and progress head.
+  Future<void> updateJamPlayback(
+    String coupleId, {
+    required bool playing,
+    required int positionMs,
+  }) async {
+    await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
+      'currentJamPlaying': playing,
+      'currentJamPositionMs': positionMs,
+      'currentJamLastUpdatedMs': DateTime.now().millisecondsSinceEpoch,
+    });
+  }
+
+  /// Appends a track map to the queue.
+  Future<void> addToJamQueue(String coupleId, Map<String, dynamic> song) async {
+    await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
+      'jamQueue': FieldValue.arrayUnion([song]),
+    });
+  }
+
+  /// Pops the first song in the queue and loads it.
+  Future<void> popFromJamQueue(String coupleId, List<dynamic> queue) async {
+    if (queue.isEmpty) return;
+    final nextSong = queue.first;
+    final remainingQueue = List.from(queue)..removeAt(0);
+    await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
+      'currentJamTitle': nextSong['title'],
+      'currentJamArtist': nextSong['artist'],
+      'currentJamImageUrl': nextSong['imageUrl'],
+      'currentJamDownloadUrl': nextSong['downloadUrl'],
+      'currentJamSharedBy': _uid,
+      'currentJamSharedAt': FieldValue.serverTimestamp(),
+      'currentJamPlaying': true,
+      'currentJamPositionMs': 0,
+      'currentJamLastUpdatedMs': DateTime.now().millisecondsSinceEpoch,
+      'jamQueue': remainingQueue,
+    });
+  }
+
+  /// Clear the entire queue
+  Future<void> clearJamQueue(String coupleId) async {
+    await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
+      'jamQueue': [],
+    });
+  }
+
+  /// Mood daily check-in
+  Future<void> setMood(String coupleId, String emoji) async {
+    final uid = _uid;
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // 1. Update today's mood on couple doc
+    await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
+      'currentMoods.$uid': emoji,
+    });
+
+    // 2. Add document to subcollection moods history
+    await _db
+        .collection(AppConstants.couplesCollection)
+        .doc(coupleId)
+        .collection('moods')
+        .doc('${todayStr}_$uid')
+        .set({
+      'uid': uid,
+      'emoji': emoji,
+      'date': todayStr,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Typing state tracker
+  Future<void> setTypingState(String coupleId, bool typing) async {
+    await _db.collection(AppConstants.couplesCollection).doc(coupleId).update({
+      'typingState.$_uid': typing,
     });
   }
 

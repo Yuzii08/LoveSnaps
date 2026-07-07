@@ -11,7 +11,11 @@ import 'screens/onboarding/permissions_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/home/settings_screen.dart';
 import 'screens/home/chat_screen.dart';
-import 'services/auth_service.dart';
+import 'screens/home/notes_jar_screen.dart';
+import 'screens/home/mood_history_screen.dart';
+import 'screens/home/event_list_screen.dart';
+import 'screens/home/stats_screen.dart';
+import 'models/couple_model.dart';
 
 // ── Router ─────────────────────────────────────────────────────────────────
 
@@ -53,6 +57,22 @@ final _router = GoRouter(
         GoRoute(
           path: 'chat',
           builder: (context, state) => const ChatScreen(),
+        ),
+        GoRoute(
+          path: 'notes-jar',
+          builder: (context, state) => const NotesJarScreen(),
+        ),
+        GoRoute(
+          path: 'mood-history',
+          builder: (context, state) => const MoodHistoryScreen(),
+        ),
+        GoRoute(
+          path: 'events',
+          builder: (context, state) => const EventListScreen(),
+        ),
+        GoRoute(
+          path: 'stats',
+          builder: (context, state) => StatsScreen(couple: state.extra as CoupleModel),
         ),
       ],
     ),

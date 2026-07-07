@@ -224,3 +224,85 @@ exports.dailyMilestoneCheck = functions.pubsub
 
     return null;
   });
+
+// ── 5. Chat Message Notification ──────────────────────────────────────────────
+//
+// Triggers when a new message is added to a couple's message list.
+// Sends an FCM push notification to the partner.
+
+exports.onNewChatMessage = functions.firestore
+  .document('couples/{coupleId}/messages/{messageId}')
+  .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data) return null;
+
+    const senderUid = data.senderId;
+    if (!senderUid) return null;
+
+    const text = data.text || '';
+    const isImage = !!data.imageUrl;
+    const isSticker = !!data.sticker;
+    
+    let previewText = text;
+    if (isImage) {
+      previewText = '📷 Sent a photo';
+    } else if (isSticker) {
+      previewText = `🧸 Sent a ${data.sticker} sticker`;
+    }
+
+    const coupleId = context.params.coupleId;
+
+    // Load couple doc to find the partner
+    const coupleDoc = await db.collection('couples').doc(coupleId).get();
+    if (!coupleDoc.exists) return null;
+    const memberIds = coupleDoc.data().memberIds || [];
+    const partnerUid = memberIds.find(id => id !== senderUid);
+    if (!partnerUid) return null;
+
+    // Get sender name
+    const senderDoc = await db.collection('users').doc(senderUid).get();
+    const senderName = senderDoc.exists ? (senderDoc.data().displayName || 'Partner') : 'Partner';
+
+    // Get partner FCM token
+    const partnerDoc = await db.collection('users').doc(partnerUid).get();
+    if (!partnerDoc.exists) return null;
+    const token = partnerDoc.data().fcmToken;
+    if (!token) return null;
+
+    const message = {
+      token,
+      notification: {
+        title: senderName,
+        body: previewText,
+      },
+      data: {
+        type: 'chat',
+        coupleId,
+        senderUid,
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: 'default',
+            badge: 1,
+          },
+        },
+      },
+      android: {
+        priority: 'high',
+        notification: {
+          sound: 'default',
+          channelId: 'lovesnaps_main',
+        },
+      },
+    };
+
+    try {
+      await messaging.send(message);
+      functions.logger.info(`Chat push sent from ${senderUid} to ${partnerUid}`);
+    } catch (err) {
+      functions.logger.error('FCM chat send failed:', err);
+    }
+
+    return null;
+  });

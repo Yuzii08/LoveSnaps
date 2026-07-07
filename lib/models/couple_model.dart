@@ -43,12 +43,26 @@ class CoupleModel extends Equatable {
   final String manualStatus; // "together" | "apart"
   final DateTime? lastMissYouSentAt;
   final String? lastMissYouSentBy;
+  
+  // Jam Syncing Fields
   final String? currentJamTitle;
   final String? currentJamArtist;
   final String? currentJamSharedBy;
   final DateTime? currentJamSharedAt;
   final String? currentJamImageUrl;
   final String? currentJamDownloadUrl;
+  final bool currentJamPlaying;
+  final int currentJamPositionMs;
+  final int currentJamLastUpdatedMs;
+  final List<dynamic> jamQueue;
+
+  // Mood and Chat Indicators
+  final Map<String, String> currentMoods; // uid -> emoji
+  final Map<String, bool> typingState; // uid -> typing status (bool)
+  
+  // Couple Stats
+  final int longestStreak;
+  
   final DateTime createdAt;
 
   const CoupleModel({
@@ -71,6 +85,13 @@ class CoupleModel extends Equatable {
     this.currentJamSharedAt,
     this.currentJamImageUrl,
     this.currentJamDownloadUrl,
+    this.currentJamPlaying = false,
+    this.currentJamPositionMs = 0,
+    this.currentJamLastUpdatedMs = 0,
+    this.jamQueue = const [],
+    this.currentMoods = const {},
+    this.typingState = const {},
+    this.longestStreak = 0,
     required this.createdAt,
   });
 
@@ -127,6 +148,12 @@ class CoupleModel extends Equatable {
       ),
     );
 
+    final rawMoods = data['currentMoods'] as Map? ?? {};
+    final currentMoods = rawMoods.map((key, val) => MapEntry(key.toString(), val.toString()));
+
+    final rawTyping = data['typingState'] as Map? ?? {};
+    final typingState = rawTyping.map((key, val) => MapEntry(key.toString(), val as bool));
+
     return CoupleModel(
       coupleId: doc.id,
       memberIds: List<String>.from(data['memberIds'] as List? ?? []),
@@ -149,6 +176,13 @@ class CoupleModel extends Equatable {
       currentJamSharedAt: (data['currentJamSharedAt'] as Timestamp?)?.toDate(),
       currentJamImageUrl: data['currentJamImageUrl'] as String?,
       currentJamDownloadUrl: data['currentJamDownloadUrl'] as String?,
+      currentJamPlaying: data['currentJamPlaying'] as bool? ?? false,
+      currentJamPositionMs: (data['currentJamPositionMs'] as num?)?.toInt() ?? 0,
+      currentJamLastUpdatedMs: (data['currentJamLastUpdatedMs'] as num?)?.toInt() ?? 0,
+      jamQueue: List<dynamic>.from(data['jamQueue'] as List? ?? []),
+      currentMoods: currentMoods,
+      typingState: typingState,
+      longestStreak: (data['longestStreak'] as num?)?.toInt() ?? (data['streakCount'] as num?)?.toInt() ?? 0,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
@@ -181,6 +215,13 @@ class CoupleModel extends Equatable {
           : null,
       'currentJamImageUrl': currentJamImageUrl,
       'currentJamDownloadUrl': currentJamDownloadUrl,
+      'currentJamPlaying': currentJamPlaying,
+      'currentJamPositionMs': currentJamPositionMs,
+      'currentJamLastUpdatedMs': currentJamLastUpdatedMs,
+      'jamQueue': jamQueue,
+      'currentMoods': currentMoods,
+      'typingState': typingState,
+      'longestStreak': longestStreak,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -203,6 +244,13 @@ class CoupleModel extends Equatable {
     DateTime? currentJamSharedAt,
     String? currentJamImageUrl,
     String? currentJamDownloadUrl,
+    bool? currentJamPlaying,
+    int? currentJamPositionMs,
+    int? currentJamLastUpdatedMs,
+    List<dynamic>? jamQueue,
+    Map<String, String>? currentMoods,
+    Map<String, bool>? typingState,
+    int? longestStreak,
   }) {
     return CoupleModel(
       coupleId: coupleId,
@@ -226,6 +274,13 @@ class CoupleModel extends Equatable {
       currentJamSharedAt: currentJamSharedAt ?? this.currentJamSharedAt,
       currentJamImageUrl: currentJamImageUrl ?? this.currentJamImageUrl,
       currentJamDownloadUrl: currentJamDownloadUrl ?? this.currentJamDownloadUrl,
+      currentJamPlaying: currentJamPlaying ?? this.currentJamPlaying,
+      currentJamPositionMs: currentJamPositionMs ?? this.currentJamPositionMs,
+      currentJamLastUpdatedMs: currentJamLastUpdatedMs ?? this.currentJamLastUpdatedMs,
+      jamQueue: jamQueue ?? this.jamQueue,
+      currentMoods: currentMoods ?? this.currentMoods,
+      typingState: typingState ?? this.typingState,
+      longestStreak: longestStreak ?? this.longestStreak,
       createdAt: createdAt,
     );
   }
@@ -239,5 +294,14 @@ class CoupleModel extends Equatable {
         partnerACheckedIn,
         partnerBCheckedIn,
         manualStatus,
+        currentJamTitle,
+        currentJamArtist,
+        currentJamPlaying,
+        currentJamPositionMs,
+        currentJamLastUpdatedMs,
+        jamQueue,
+        currentMoods,
+        typingState,
+        longestStreak,
       ];
 }
