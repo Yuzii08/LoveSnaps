@@ -20,7 +20,7 @@ dependencies:
   firebase_storage: ^11.6.0
 
   # Home Screen Widgets
-  home_widget: ^0.8.1
+  home_widget: 0.9.3
 
   # Supabase Storage
   supabase_flutter: ^2.6.0
@@ -53,10 +53,10 @@ dependencies:
   url_launcher: ^6.2.6
   http: ^1.6.0
   just_audio: ^0.9.44
-  share_plus: ^7.2.1
+  share_plus: 10.0.0
   path_provider: ^2.1.1
   just_audio_background: ^0.0.1-beta.15
-  mobile_scanner: ^5.1.1
+  mobile_scanner: 7.2.0
 
 dev_dependencies:
   flutter_test:
