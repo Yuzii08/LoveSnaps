@@ -68,6 +68,11 @@ jobs:
       - name: 📦 Install dependencies
         run: flutter pub get
 
+      - name: 🛠️ Force Android SDK 36 for Plugins
+        run: |
+          echo "flutter.compileSdkVersion=36" >> android/local.properties
+          echo "flutter.targetSdkVersion=36" >> android/local.properties
+
       - name: 📝 Inject Commit SHA
         run: |
           COMMIT_SHA=${GITHUB_SHA}
