@@ -12,7 +12,7 @@ import '../../services/auth_service.dart';
 import '../../services/couple_service.dart';
 import '../../services/chat_service.dart';
 import '../../models/message_model.dart';
-import '../../models/couple_model.dart';
+
 
 final partnerUserProvider = FutureProvider.autoDispose<Map<String, dynamic>?>((ref) async {
   final couple = ref.watch(coupleStreamProvider).value;

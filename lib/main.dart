@@ -50,24 +50,36 @@ void widgetBackgroundCallback(Uri? uri) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio Playback',
-    androidNotificationOngoing: true,
-  );
-
-  // Firebase init
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // Initialize Supabase Storage if credentials are provided
-  if (AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL') {
-    await Supabase.initialize(
-      url: AppConstants.supabaseUrl,
-      anonKey: AppConstants.supabaseAnonKey,
+  try {
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+      androidNotificationChannelName: 'Audio Playback',
+      androidNotificationOngoing: true,
     );
-    debugPrint('Supabase initialized for Storage');
+  } catch (e) {
+    debugPrint('JustAudioBackground init failed: $e');
+  }
+
+  try {
+    // Firebase init
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase init failed: $e');
+  }
+
+  try {
+    // Initialize Supabase Storage if credentials are provided
+    if (AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL') {
+      await Supabase.initialize(
+        url: AppConstants.supabaseUrl,
+        anonKey: AppConstants.supabaseAnonKey,
+      );
+      debugPrint('Supabase initialized for Storage');
+    }
+  } catch (e) {
+    debugPrint('Supabase init failed: $e');
   }
 
   if (AppConstants.useLocalMock) {
@@ -77,14 +89,26 @@ void main() async {
 
   // Native-only features (not supported on web)
   if (!kIsWeb) {
-    // Background FCM handler
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    try {
+      // Background FCM handler
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    } catch (e) {
+      debugPrint('FCM handler init failed: $e');
+    }
 
-    // home_widget: set app group for iOS shared storage
-    await HomeWidget.setAppGroupId('group.com.lovesnaps.app');
+    try {
+      // home_widget: set app group for iOS shared storage
+      await HomeWidget.setAppGroupId('group.com.lovesnaps.app');
+    } catch (e) {
+      debugPrint('HomeWidget setAppGroupId failed: $e');
+    }
 
-    // Register background callback for interactive widget actions
-    HomeWidget.registerBackgroundCallback(widgetBackgroundCallback);
+    try {
+      // Register background callback for interactive widget actions
+      HomeWidget.registerBackgroundCallback(widgetBackgroundCallback);
+    } catch (e) {
+      debugPrint('HomeWidget callback init failed: $e');
+    }
   }
 
   runApp(
