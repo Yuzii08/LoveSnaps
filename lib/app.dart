@@ -27,6 +27,10 @@ final _router = GoRouter(
   },
   routes: [
     GoRoute(
+      path: '/',
+      redirect: (context, state) => '/splash',
+    ),
+    GoRoute(
       path: '/splash',
       builder: (context, state) => const SplashScreen(),
     ),
