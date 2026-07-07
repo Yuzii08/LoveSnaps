@@ -672,6 +672,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
       ),
     );
   }
+}
 
 class _MusicSearchSheet extends StatefulWidget {
   final Function(String title, String artist, String? imageUrl, String? downloadUrl) onSelectSong;
