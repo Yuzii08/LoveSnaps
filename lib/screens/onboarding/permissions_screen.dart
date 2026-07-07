@@ -59,7 +59,7 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('🔔', style: const TextStyle(fontSize: 48)),
+                  const Text('🔔', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 16),
                   Text(
                     'A few permissions',
@@ -81,21 +81,29 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               _PermissionCard(
                 emoji: '🔔',
                 title: 'Notifications',
-                subtitle: 'Get streak reminders, "miss you" nudges, and milestone alerts.',
+                subtitle:
+                    'Get streak reminders, "miss you" nudges, and milestone alerts.',
                 granted: _notifGranted,
                 onTap: _loading ? null : _requestNotifications,
-              ).animate(delay: 100.ms).fadeIn(duration: 400.ms).slideX(begin: -0.1, end: 0),
+              )
+                  .animate(delay: 100.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideX(begin: -0.1, end: 0),
 
               const SizedBox(height: 16),
 
               _PermissionCard(
                 emoji: '📍',
                 title: 'Location (optional)',
-                subtitle: 'Show how far apart you are on the widget. Never stored long-term.',
+                subtitle:
+                    'Show how far apart you are on the widget. Never stored long-term.',
                 granted: _locationGranted,
                 onTap: _loading ? null : _requestLocation,
                 optional: true,
-              ).animate(delay: 200.ms).fadeIn(duration: 400.ms).slideX(begin: -0.1, end: 0),
+              )
+                  .animate(delay: 200.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideX(begin: -0.1, end: 0),
 
               const Spacer(),
 
@@ -103,16 +111,18 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: LoveSnapsColors.tertiaryContainer.withOpacity(0.2),
+                  color:
+                      LoveSnapsColors.tertiaryContainer.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: LoveSnapsColors.tertiaryContainer, width: 1.5),
+                  border: Border.all(
+                      color: LoveSnapsColors.tertiaryContainer, width: 1.5),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Text('📱', style: const TextStyle(fontSize: 24)),
+                        const Text('📱', style: TextStyle(fontSize: 24)),
                         const SizedBox(width: 10),
                         Text(
                           'Add the widget',
@@ -173,16 +183,18 @@ class _PermissionCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: granted
-            ? LoveSnapsColors.tertiary.withOpacity(0.1)
+            ? LoveSnapsColors.tertiary.withValues(alpha: 0.1)
             : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: granted ? LoveSnapsColors.tertiary : LoveSnapsColors.primaryContainer,
+          color: granted
+              ? LoveSnapsColors.tertiary
+              : LoveSnapsColors.primaryContainer,
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -200,17 +212,20 @@ class _PermissionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 16),
                     ),
                     if (optional) ...[
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: LoveSnapsColors.tertiaryContainer.withOpacity(0.4),
+                          color: LoveSnapsColors.tertiaryContainer
+                              .withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
+                        child: const Text(
                           'optional',
                           style: TextStyle(
                             fontSize: 10,
@@ -225,7 +240,7 @@ class _PermissionCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: LoveSnapsColors.onSurfaceVariant,
                     fontSize: 13,
                   ),
@@ -235,15 +250,18 @@ class _PermissionCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           if (granted)
-            Icon(Icons.check_circle_rounded, color: LoveSnapsColors.tertiary, size: 28)
+            const Icon(Icons.check_circle_rounded,
+                color: LoveSnapsColors.tertiary, size: 28)
           else
             TextButton(
               onPressed: onTap,
               style: TextButton.styleFrom(
                 foregroundColor: LoveSnapsColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              child: const Text('Allow', style: TextStyle(fontWeight: FontWeight.w700)),
+              child: const Text('Allow',
+                  style: TextStyle(fontWeight: FontWeight.w700)),
             ),
         ],
       ),

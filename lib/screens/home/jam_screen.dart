@@ -287,7 +287,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                                   color: Colors.grey[900],
                                   boxShadow: [
                                     BoxShadow(
-                                      color: LoveSnapsColors.primary.withOpacity(0.15),
+                                      color: LoveSnapsColors.primary.withValues(alpha: 0.15),
                                       blurRadius: 20,
                                       offset: const Offset(0, 8),
                                     ),
@@ -295,7 +295,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                                   gradient: RadialGradient(
                                     colors: [
                                       Colors.grey[800]!,
-                                      Colors.black.withOpacity(0.9),
+                                      Colors.black.withValues(alpha: 0.9),
                                       Colors.black,
                                     ],
                                   ),

@@ -39,7 +39,7 @@ class DistanceCard extends ConsumerWidget {
         gradient: LinearGradient(
           colors: [
             Colors.white,
-            LoveSnapsColors.primaryContainer.withOpacity(0.5),
+            LoveSnapsColors.primaryContainer.withValues(alpha: 0.5),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -58,7 +58,7 @@ class DistanceCard extends ConsumerWidget {
             child: Icon(
               Icons.location_city_rounded,
               size: 100,
-              color: LoveSnapsColors.primary.withOpacity(0.04),
+              color: LoveSnapsColors.primary.withValues(alpha: 0.04),
             ),
           ),
           
@@ -71,7 +71,7 @@ class DistanceCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: LoveSnapsColors.pinkAccent.withOpacity(0.1),
+                      color: LoveSnapsColors.pinkAccent.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.location_on_rounded, color: LoveSnapsColors.pinkAccent, size: 20),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -37,7 +36,7 @@ class SnapService {
 
   /// Takes a photo using the device camera (or drops down to file picker on Web)
   Future<XFile?> capturePhoto() async {
-    final isSupabaseConfigured = AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL';
+    const isSupabaseConfigured = AppConstants.supabaseUrl != 'YOUR_SUPABASE_URL';
     try {
       final file = await _picker.pickImage(
         source: ImageSource.camera,

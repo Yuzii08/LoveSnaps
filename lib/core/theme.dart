@@ -48,7 +48,7 @@ class LoveSnapsColors {
 
 class LoveSnapsTheme {
   static ThemeData light() {
-    final colorScheme = const ColorScheme(
+    const colorScheme = ColorScheme(
       brightness: Brightness.light,
       primary: LoveSnapsColors.primary,
       onPrimary: LoveSnapsColors.onPrimary,
@@ -226,7 +226,7 @@ class LoveSnapsShadows {
   // Ultra-soft plush shadow for cards
   static final marshmallowShadowCard = [
     BoxShadow(
-      color: const Color(0xFF8B5CF6).withOpacity(0.08),
+      color: const Color(0xFF8B5CF6).withValues(alpha: 0.08),
       blurRadius: 32,
       spreadRadius: 4,
       offset: const Offset(0, 12),
@@ -236,7 +236,7 @@ class LoveSnapsShadows {
   // Bright pink glowing shadow for buttons
   static final marshmallowShadowBtn = [
     BoxShadow(
-      color: const Color(0xFFF472B6).withOpacity(0.3),
+      color: const Color(0xFFF472B6).withValues(alpha: 0.3),
       blurRadius: 24,
       spreadRadius: 2,
       offset: const Offset(0, 8),
@@ -246,7 +246,7 @@ class LoveSnapsShadows {
   // Tertiary glow for milestones
   static final marshmallowGlow = [
     BoxShadow(
-      color: const Color(0xFF34D399).withOpacity(0.25),
+      color: const Color(0xFF34D399).withValues(alpha: 0.25),
       blurRadius: 28,
       spreadRadius: 2,
       offset: const Offset(0, 8),

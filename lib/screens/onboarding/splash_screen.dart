@@ -60,15 +60,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [LoveSnapsColors.primary, LoveSnapsColors.tertiaryContainer],
+                gradient: const LinearGradient(
+                  colors: [
+                    LoveSnapsColors.primary,
+                    LoveSnapsColors.tertiaryContainer
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: LoveSnapsColors.primary.withOpacity(0.4),
+                    color: LoveSnapsColors.primary.withValues(alpha: 0.4),
                     blurRadius: 30,
                     offset: const Offset(0, 8),
                   ),
@@ -114,7 +117,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
             const SizedBox(height: 60),
 
-            SizedBox(
+            const SizedBox(
               width: 40,
               height: 40,
               child: CircularProgressIndicator(

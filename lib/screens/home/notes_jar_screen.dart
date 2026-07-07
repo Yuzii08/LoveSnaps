@@ -45,7 +45,7 @@ class NotesJarScreen extends ConsumerWidget {
                       width: 160,
                       height: 160,
                       decoration: BoxDecoration(
-                        color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                        color: LoveSnapsColors.primaryContainer.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
                       child: const Center(
@@ -84,7 +84,7 @@ class NotesJarScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         Text(
                           '${notes.length} sweet note${notes.length == 1 ? '' : 's'} inside',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: LoveSnapsColors.secondary,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -116,7 +116,7 @@ class NotesJarScreen extends ConsumerWidget {
                         child: Card(
                           color: bgColor,
                           elevation: 2,
-                          shadowColor: LoveSnapsColors.primary.withOpacity(0.05),
+                          shadowColor: LoveSnapsColors.primary.withValues(alpha: 0.05),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),

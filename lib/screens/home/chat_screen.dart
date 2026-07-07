@@ -88,7 +88,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: const Row(
             children: [
               SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
@@ -157,7 +157,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       builder: (context) => GestureDetector(
         onTap: () => Navigator.pop(context),
         child: Container(
-          color: Colors.black.withOpacity(0.95),
+          color: Colors.black.withValues(alpha: 0.95),
           child: Stack(
             children: [
               Center(
@@ -286,7 +286,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                       const SizedBox(height: 12),
                                       Text(
                                         'Send a sweet message to $partnerName!',
-                                        style: TextStyle(color: LoveSnapsColors.onSurfaceVariant),
+                                        style: const TextStyle(color: LoveSnapsColors.onSurfaceVariant),
                                       ),
                                     ],
                                   ),
@@ -363,7 +363,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        backgroundColor: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                        backgroundColor: LoveSnapsColors.primaryContainer.withValues(alpha: 0.5),
                         side: BorderSide.none,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -382,7 +382,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, -4),
                     ),
@@ -540,7 +540,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
+                        color: Colors.black.withValues(alpha: 0.03),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -624,7 +624,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white, width: 3),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: wiggleEffect,
@@ -645,7 +645,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       height: 120,
       margin: const EdgeInsets.only(top: 8),
       decoration: BoxDecoration(
-        color: LoveSnapsColors.surfaceVariant.withOpacity(0.4),
+        color: LoveSnapsColors.surfaceVariant.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(24),
       ),
       child: GridView.builder(
@@ -752,7 +752,7 @@ class _AttachmentOption extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 28),

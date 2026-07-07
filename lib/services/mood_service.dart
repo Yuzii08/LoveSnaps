@@ -25,7 +25,6 @@ final moodsHistoryStreamProvider = StreamProvider.autoDispose<List<MoodModel>>((
 
 class MoodService {
   final Ref _ref;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   MoodService(this._ref);
 

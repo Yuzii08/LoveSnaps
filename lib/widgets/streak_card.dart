@@ -45,7 +45,7 @@ class StreakCard extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFF6B6B).withOpacity(0.4),
+                        color: const Color(0xFFFF6B6B).withValues(alpha: 0.4),
                         blurRadius: 20,
                         spreadRadius: 2,
                         offset: const Offset(0, 8),

@@ -28,7 +28,7 @@ class DaysCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 2),
         boxShadow: LoveSnapsShadows.marshmallowShadowCard,
       ),
       child: Stack(
@@ -43,7 +43,7 @@ class DaysCard extends StatelessWidget {
               width: 140,
               height: 140,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
             ),
@@ -55,7 +55,7 @@ class DaysCard extends StatelessWidget {
               width: 180,
               height: 180,
               decoration: BoxDecoration(
-                color: const Color(0xFFc2e8ff).withOpacity(0.4),
+                color: const Color(0xFFc2e8ff).withValues(alpha: 0.4),
                 shape: BoxShape.circle,
               ),
             ),
@@ -95,7 +95,7 @@ class DaysCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: LoveSnapsColors.pinkAccent.withOpacity(0.3),
+                      color: LoveSnapsColors.pinkAccent.withValues(alpha: 0.3),
                       blurRadius: 20,
                       spreadRadius: 2,
                       offset: const Offset(0, 8),
@@ -107,7 +107,7 @@ class DaysCard extends StatelessWidget {
                 child: ClipPath(
                   clipper: _HeartClipper(),
                   child: Container(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: AnimatedContainer(
@@ -134,7 +134,7 @@ class DaysCard extends StatelessWidget {
               Text(
                 '${(progress * 100).toInt()}% to Anniversary',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: LoveSnapsColors.primary.withOpacity(0.8),
+                  color: LoveSnapsColors.primary.withValues(alpha: 0.8),
                   fontWeight: FontWeight.w700,
                 ),
               ),

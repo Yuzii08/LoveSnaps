@@ -51,7 +51,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     backgroundColor: LoveSnapsColors.primaryContainer,
                     child: Text(
                       (user?.displayName ?? 'U')[0].toUpperCase(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: LoveSnapsColors.primary,
                         fontWeight: FontWeight.w800,
                       ),
@@ -148,8 +148,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: 'Account',
             children: [
               ListTile(
-                leading: Icon(Icons.logout_rounded, color: LoveSnapsColors.error),
-                title: Text(
+                leading: const Icon(Icons.logout_rounded, color: LoveSnapsColors.error),
+                title: const Text(
                   'Sign Out',
                   style: TextStyle(color: LoveSnapsColors.error),
                 ),
@@ -160,7 +160,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           const SizedBox(height: 32),
 
-          Center(
+          const Center(
             child: Text(
               'LoveSnaps v1.0.0\nMade with 💕',
               textAlign: TextAlign.center,
@@ -188,7 +188,7 @@ class _SectionCard extends StatelessWidget {
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             title.toUpperCase(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: LoveSnapsColors.onSurfaceVariant,

@@ -315,7 +315,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: LoveSnapsColors.primaryContainer.withOpacity(0.3),
+        color: LoveSnapsColors.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white, width: 1.5),
       ),
@@ -733,7 +733,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       lastUpdatedDate: couple.streakLastUpdatedDate,
     );
 
-    final partnerName = 'Partner';
+    const partnerName = 'Partner';
     final missYouReceived = couple.lastMissYouSentBy == partnerUid;
 
     ref.read(widgetServiceProvider).updateWidgets(
@@ -902,7 +902,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               width: 48,
                                               height: 48,
                                               decoration: BoxDecoration(
-                                                color: Colors.white.withOpacity(0.5),
+                                                color: Colors.white.withValues(alpha: 0.5),
                                                 shape: BoxShape.circle,
                                               ),
                                               child: const Center(
@@ -1025,7 +1025,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       width: 140,
                                       height: 180,
                                       decoration: BoxDecoration(
-                                        color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                                        color: LoveSnapsColors.primaryContainer.withValues(alpha: 0.5),
                                         borderRadius: BorderRadius.circular(24),
                                         border: Border.all(color: LoveSnapsColors.primaryContainer, width: 2, style: BorderStyle.solid),
                                       ),
@@ -1130,7 +1130,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Show loading snackbar
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: const Row(
           children: [
             SizedBox(
@@ -1156,8 +1156,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('📸 Snap posted successfully!'),
+        const SnackBar(
+          content: Text('📸 Snap posted successfully!'),
           backgroundColor: LoveSnapsColors.pinkAccent,
         ),
       );
@@ -1181,7 +1181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (context) => GestureDetector(
         onTap: () => Navigator.pop(context),
         child: Container(
-          color: Colors.black.withOpacity(0.9),
+          color: Colors.black.withValues(alpha: 0.9),
           child: Stack(
             alignment: Alignment.center,
             children: [
@@ -1233,7 +1233,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     color: Colors.transparent,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -1352,7 +1352,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
+                  color: Colors.black.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -1405,12 +1405,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   color: LoveSnapsColors.primary,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -1431,7 +1431,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       margin: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(9999),
         boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
       ),
@@ -1518,7 +1518,7 @@ class _MilestoneBanner extends StatelessWidget {
                 Text(
                   'Celebrate every moment together 💕',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: LoveSnapsColors.onTertiaryContainer.withOpacity(0.8),
+                    color: LoveSnapsColors.onTertiaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -1542,7 +1542,7 @@ class _NextMilestoneHint extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: LoveSnapsColors.secondaryContainer.withOpacity(0.5),
+          color: LoveSnapsColors.secondaryContainer.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: LoveSnapsColors.secondaryContainer),
         ),

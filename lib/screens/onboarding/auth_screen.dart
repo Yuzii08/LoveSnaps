@@ -87,7 +87,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 width: 256,
                 height: 256,
                 decoration: BoxDecoration(
-                  color: LoveSnapsColors.primaryContainer.withOpacity(0.6),
+                  color: LoveSnapsColors.primaryContainer.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
               ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
@@ -112,7 +112,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 width: 320,
                 height: 320,
                 decoration: BoxDecoration(
-                  color: LoveSnapsColors.secondaryContainer.withOpacity(0.4),
+                  color: LoveSnapsColors.secondaryContainer.withValues(alpha: 0.4),
                   shape: BoxShape.circle,
                 ),
               ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
@@ -160,7 +160,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             aspectRatio: 1,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.6),
+                                color: Colors.white.withValues(alpha: 0.6),
                                 shape: BoxShape.circle,
                                 boxShadow: LoveSnapsShadows.marshmallowShadowBtn,
                               ),
@@ -175,7 +175,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                         begin: Alignment.topRight,
                                         end: Alignment.bottomLeft,
                                         colors: [
-                                          LoveSnapsColors.primaryContainer.withOpacity(0.2),
+                                          LoveSnapsColors.primaryContainer.withValues(alpha: 0.2),
                                           Colors.transparent,
                                         ],
                                       ),
@@ -220,7 +220,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         Text(
                           "Create a cozy space for just the two of you to share moments, memories, and little surprises.",
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: LoveSnapsColors.onSurfaceVariant.withOpacity(0.8),
+                            color: LoveSnapsColors.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           textAlign: TextAlign.center,
                         ).animate().fadeIn(delay: 400.ms),
@@ -239,7 +239,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 _isSignIn = false;
                               });
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -264,7 +264,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             TextSpan(
                               text: "Already have an account? ",
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: LoveSnapsColors.onSurfaceVariant.withOpacity(0.6),
+                                color: LoveSnapsColors.onSurfaceVariant.withValues(alpha: 0.6),
                               ),
                               children: [
                                 TextSpan(
@@ -407,7 +407,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             decoration: BoxDecoration(
               color: LoveSnapsColors.errorContainer,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: LoveSnapsColors.error.withOpacity(0.3)),
+              border: Border.all(color: LoveSnapsColors.error.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -450,7 +450,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               text: _isSignIn
                   ? "Don't have an account? "
                   : 'Already have an account? ',
-              style: TextStyle(color: LoveSnapsColors.onSurfaceVariant),
+              style: const TextStyle(color: LoveSnapsColors.onSurfaceVariant),
               children: [
                 TextSpan(
                   text: _isSignIn ? 'Sign up' : 'Sign in',

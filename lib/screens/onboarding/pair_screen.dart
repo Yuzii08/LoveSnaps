@@ -157,7 +157,7 @@ class _PairScreenState extends ConsumerState<PairScreen> {
               // Toggle: Generate / Join
               Container(
                 decoration: BoxDecoration(
-                  color: LoveSnapsColors.primaryContainer.withOpacity(0.5),
+                  color: LoveSnapsColors.primaryContainer.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.all(4),
@@ -200,7 +200,7 @@ class _PairScreenState extends ConsumerState<PairScreen> {
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: LoveSnapsColors.primary.withOpacity(0.3),
+                      color: LoveSnapsColors.primary.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     )
@@ -265,7 +265,7 @@ class _PairScreenState extends ConsumerState<PairScreen> {
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [LoveSnapsColors.primaryContainer, LoveSnapsColors.tertiaryContainer.withOpacity(0.4)],
+                  colors: [LoveSnapsColors.primaryContainer, LoveSnapsColors.tertiaryContainer.withValues(alpha: 0.4)],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: LoveSnapsColors.primary, width: 2),
@@ -423,15 +423,15 @@ class _ErrorBanner extends StatelessWidget {
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: LoveSnapsColors.error.withOpacity(0.1),
+        color: LoveSnapsColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: LoveSnapsColors.error.withOpacity(0.3)),
+        border: Border.all(color: LoveSnapsColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: LoveSnapsColors.error, size: 20),
+          const Icon(Icons.error_outline, color: LoveSnapsColors.error, size: 20),
           const SizedBox(width: 10),
-          Expanded(child: Text(message, style: TextStyle(color: LoveSnapsColors.error))),
+          Expanded(child: Text(message, style: const TextStyle(color: LoveSnapsColors.error))),
         ],
       ),
     ).animate().shake(duration: 400.ms);

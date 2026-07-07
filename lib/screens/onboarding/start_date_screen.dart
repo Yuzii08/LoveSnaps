@@ -41,21 +41,30 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
       },
     );
     if (picked != null) {
-      setState(() { _selectedDate = picked; });
+      setState(() {
+        _selectedDate = picked;
+      });
     }
   }
 
   Future<void> _confirm() async {
     if (_selectedDate == null) {
-      setState(() { _error = 'Please select your relationship start date.'; });
+      setState(() {
+        _error = 'Please select your relationship start date.';
+      });
       return;
     }
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final userDoc = await ref.read(currentUserDocProvider.future);
       final coupleId = userDoc?.coupleId;
       if (coupleId == null) throw Exception('Not paired yet.');
-      await ref.read(coupleServiceProvider).setStartDate(coupleId, _selectedDate!);
+      await ref
+          .read(coupleServiceProvider)
+          .setStartDate(coupleId, _selectedDate!);
       if (!mounted) return;
       if (context.canPop()) {
         context.pop();
@@ -63,9 +72,14 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
         context.go('/permissions');
       }
     } catch (e) {
-      setState(() { _error = e.toString(); });
+      setState(() {
+        _error = e.toString();
+      });
     } finally {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -88,7 +102,7 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('📅', style: const TextStyle(fontSize: 48)),
+                  const Text('📅', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 16),
                   Text(
                     'When did your\nlove begin?',
@@ -116,8 +130,15 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: _selectedDate != null
-                          ? [LoveSnapsColors.primaryContainer, LoveSnapsColors.tertiaryContainer.withOpacity(0.3)]
-                          : [LoveSnapsColors.surface, LoveSnapsColors.surfaceVariant],
+                          ? [
+                              LoveSnapsColors.primaryContainer,
+                              LoveSnapsColors.tertiaryContainer
+                                  .withValues(alpha: 0.3)
+                            ]
+                          : [
+                              LoveSnapsColors.surface,
+                              LoveSnapsColors.surfaceVariant
+                            ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -125,7 +146,8 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                     border: Border.all(
                       color: _selectedDate != null
                           ? LoveSnapsColors.primary
-                          : LoveSnapsColors.onSurfaceVariant.withOpacity(0.3),
+                          : LoveSnapsColors.onSurfaceVariant
+                              .withValues(alpha: 0.3),
                       width: 2,
                     ),
                   ),
@@ -135,11 +157,12 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                         _selectedDate != null
                             ? DateFormat('MMMM d, yyyy').format(_selectedDate!)
                             : 'Tap to select date',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: _selectedDate != null
-                                  ? LoveSnapsColors.onSurface
-                                  : LoveSnapsColors.onSurfaceVariant,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: _selectedDate != null
+                                      ? LoveSnapsColors.onSurface
+                                      : LoveSnapsColors.onSurfaceVariant,
+                                ),
                         textAlign: TextAlign.center,
                       ),
                       if (daysCount != null) ...[
@@ -148,12 +171,13 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: LoveSnapsColors.primary.withOpacity(0.15),
+                            color:
+                                LoveSnapsColors.primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             '✨ Day $daysCount together',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: LoveSnapsColors.primary,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
@@ -165,7 +189,8 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                   ),
                 ),
               ).animate(delay: 200.ms).fadeIn(duration: 400.ms).scale(
-                    begin: const Offset(0.95, 0.95), end: const Offset(1, 1),
+                    begin: const Offset(0.95, 0.95),
+                    end: const Offset(1, 1),
                   ),
 
               const SizedBox(height: 16),
@@ -186,11 +211,11 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: LoveSnapsColors.error.withOpacity(0.1),
+                    color: LoveSnapsColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(_error!,
-                      style: TextStyle(color: LoveSnapsColors.error)),
+                      style: const TextStyle(color: LoveSnapsColors.error)),
                 ),
               ],
 
@@ -200,8 +225,10 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
                 onPressed: _loading ? null : _confirm,
                 child: _loading
                     ? const SizedBox(
-                        width: 24, height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
                     : const Text('Save Our Anniversary 💕'),
               ),
 
@@ -210,7 +237,7 @@ class _StartDateScreenState extends ConsumerState<StartDateScreen> {
               Center(
                 child: TextButton(
                   onPressed: () => context.go('/permissions'),
-                  child: Text(
+                  child: const Text(
                     'Skip for now',
                     style: TextStyle(color: LoveSnapsColors.onSurfaceVariant),
                   ),

@@ -120,7 +120,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.5,
-                        color: LoveSnapsColors.onSurfaceVariant.withOpacity(0.6),
+                        color: LoveSnapsColors.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                     ),
                     const Divider(height: 32, color: Colors.white),
@@ -145,7 +145,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: LoveSnapsColors.outlineVariant),
                       ),

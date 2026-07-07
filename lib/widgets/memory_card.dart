@@ -40,7 +40,7 @@ class MemoryCard extends StatelessWidget {
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   child: Text(
                     'Last weekend ✨',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
