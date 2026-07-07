@@ -29,6 +29,12 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   String? _loadedUrl;
   bool _isSyncingFromServer = false;
   
+  bool _isJoinedJam = true;
+  String? _soloTitle;
+  String? _soloArtist;
+  String? _soloImageUrl;
+  bool _soloIsPlaying = false;
+  
   StreamSubscription? _playerStateSub;
   StreamSubscription? _playerPositionSub;
 
@@ -70,6 +76,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   }
 
   Future<void> _handleTrackCompleted() async {
+    if (!_isJoinedJam) return;
     final myUid = ref.read(authServiceProvider).currentUser?.uid;
     if (myUid == null) return;
     
@@ -80,6 +87,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   }
 
   Future<void> _syncLocalPlaybackToFirestore() async {
+    if (!_isJoinedJam) return;
     final myUid = ref.read(authServiceProvider).currentUser?.uid;
     if (myUid == null) return;
 
@@ -96,6 +104,8 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
 
   /// Syncs database changes into local AudioPlayer
   void _syncFirestoreToLocalPlayer(CoupleModel couple, String myUid) async {
+    if (!_isJoinedJam) return;
+    
     final downloadUrl = couple.currentJamDownloadUrl;
     if (downloadUrl == null || downloadUrl.isEmpty) {
       if (_player.audioSource != null) {
@@ -163,6 +173,29 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
     }
   }
 
+  void _playSoloSong(String title, String artist, String? imageUrl, String? downloadUrl) async {
+    if (downloadUrl == null) return;
+    setState(() {
+      _soloTitle = title;
+      _soloArtist = artist;
+      _soloImageUrl = imageUrl;
+      _soloIsPlaying = true;
+    });
+    
+    await _player.setAudioSource(
+      AudioSource.uri(
+        Uri.parse(downloadUrl),
+        tag: MediaItem(
+          id: downloadUrl,
+          title: title,
+          artist: artist,
+          artUri: imageUrl != null ? Uri.parse(imageUrl) : null,
+        ),
+      ),
+    );
+    await _player.play();
+  }
+
   void _showUpdateJamBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -171,17 +204,21 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
       builder: (context) => _MusicSearchSheet(
         onSelectSong: (title, artist, imageUrl, downloadUrl) async {
           Navigator.pop(context);
-          try {
-            await ref.read(coupleServiceProvider).shareJam(
-                  widget.couple.coupleId,
-                  title,
-                  artist,
-                  imageUrl: imageUrl,
-                  downloadUrl: downloadUrl,
-                );
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to share: $e')));
+          if (!_isJoinedJam) {
+            _playSoloSong(title, artist, imageUrl, downloadUrl);
+          } else {
+            try {
+              await ref.read(coupleServiceProvider).shareJam(
+                    widget.couple.coupleId,
+                    title,
+                    artist,
+                    imageUrl: imageUrl,
+                    downloadUrl: downloadUrl,
+                  );
+            } catch (e) {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to share: $e')));
+            }
           }
         },
       ),
@@ -189,6 +226,10 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   }
 
   void _addToQueue() {
+    if (!_isJoinedJam) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Queue is only available in Jam mode!')));
+      return;
+    }
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -222,6 +263,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   }
 
   void _skipNext() async {
+    if (!_isJoinedJam) return;
     if (widget.couple.jamQueue.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Queue is empty!')),
@@ -232,6 +274,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
   }
 
   void _clearQueue() async {
+    if (!_isJoinedJam) return;
     await ref.read(coupleServiceProvider).clearJamQueue(widget.couple.coupleId);
   }
 
@@ -251,16 +294,22 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
         if (couple == null) return const Center(child: Text('Pair first to jam!'));
 
         // Reactively sync playback state if we are NOT the active sender
-        if (couple.currentJamSharedBy != myUid) {
+        if (_isJoinedJam && couple.currentJamSharedBy != myUid) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _syncFirestoreToLocalPlayer(couple, myUid);
           });
         }
 
-        final hasJam = couple.currentJamTitle != null && couple.currentJamTitle!.isNotEmpty;
-        final isSharedByMe = couple.currentJamSharedBy == myUid;
-        final sharedByName = isSharedByMe ? 'You' : 'Your partner';
-        final imageUrl = couple.currentJamImageUrl;
+        final bool hasJam = _isJoinedJam 
+            ? (couple.currentJamTitle != null && couple.currentJamTitle!.isNotEmpty)
+            : (_soloTitle != null && _soloTitle!.isNotEmpty);
+            
+        final String? imageUrl = _isJoinedJam ? couple.currentJamImageUrl : _soloImageUrl;
+        final String title = _isJoinedJam ? (couple.currentJamTitle ?? '') : (_soloTitle ?? '');
+        final String artist = _isJoinedJam ? (couple.currentJamArtist ?? '') : (_soloArtist ?? '');
+        final String sharedByName = _isJoinedJam 
+            ? (couple.currentJamSharedBy == myUid ? 'You' : 'Your partner') 
+            : 'You (Solo)';
 
         return Scaffold(
           backgroundColor: Colors.black,
@@ -309,10 +358,85 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
               // Main Content
               SafeArea(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   child: Column(
                     children: [
-                      const SizedBox(height: 16),
+                      // Mode Toggle
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 24),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                if (!_isJoinedJam) {
+                                  setState(() {
+                                    _isJoinedJam = true;
+                                    _loadedUrl = null; // force reload of jam url
+                                  });
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _isJoinedJam ? Colors.white : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(26),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.favorite_rounded, size: 16, color: _isJoinedJam ? Colors.pink : Colors.white70),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Join Jam',
+                                      style: TextStyle(
+                                        color: _isJoinedJam ? Colors.black : Colors.white70,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                if (_isJoinedJam) {
+                                  // Stop current jam playback before going solo
+                                  await _player.stop();
+                                  setState(() {
+                                    _isJoinedJam = false;
+                                  });
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: !_isJoinedJam ? Colors.white : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(26),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.headphones_rounded, size: 16, color: !_isJoinedJam ? Colors.black : Colors.white70),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Solo',
+                                      style: TextStyle(
+                                        color: !_isJoinedJam ? Colors.black : Colors.white70,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
                       // Large Album Art
                       Hero(
                         tag: 'jam_album_art',
@@ -347,7 +471,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                       // Song Info
                       if (hasJam) ...[
                         Text(
-                          couple.currentJamTitle!,
+                          title,
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -360,7 +484,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                         const SizedBox(height: 8),
                         
                         Text(
-                          couple.currentJamArtist!,
+                          artist,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Colors.white70,
                             fontWeight: FontWeight.w500,
@@ -480,13 +604,15 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                                     onPressed: () async {
                                       if (playing) {
                                         await _player.pause();
-                                        await ref.read(coupleServiceProvider).updateJamPlayback(
-                                          couple.coupleId,
-                                          playing: false,
-                                          positionMs: _player.position.inMilliseconds,
-                                        );
+                                        if (_isJoinedJam) {
+                                          await ref.read(coupleServiceProvider).updateJamPlayback(
+                                            couple.coupleId,
+                                            playing: false,
+                                            positionMs: _player.position.inMilliseconds,
+                                          );
+                                        }
                                       } else {
-                                        if (_player.audioSource == null && couple.currentJamDownloadUrl != null) {
+                                        if (_player.audioSource == null && _isJoinedJam && couple.currentJamDownloadUrl != null) {
                                           await _player.setAudioSource(
                                             AudioSource.uri(
                                               Uri.parse(couple.currentJamDownloadUrl!),
@@ -502,11 +628,13 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
                                           );
                                         }
                                         await _player.play();
-                                        await ref.read(coupleServiceProvider).updateJamPlayback(
-                                          couple.coupleId,
-                                          playing: true,
-                                          positionMs: _player.position.inMilliseconds,
-                                        );
+                                        if (_isJoinedJam) {
+                                          await ref.read(coupleServiceProvider).updateJamPlayback(
+                                            couple.coupleId,
+                                            playing: true,
+                                            positionMs: _player.position.inMilliseconds,
+                                          );
+                                        }
                                       }
                                     },
                                     icon: isBuffering 
@@ -699,12 +827,12 @@ class _MusicSearchSheetState extends State<_MusicSearchSheet> {
 
     try {
       final response = await http.get(Uri.parse(
-          'https://saavn.sumit.co/api/search/songs?query=${Uri.encodeComponent(query)}'));
+          'https://itunes.apple.com/search?term=${Uri.encodeComponent(query)}&media=music&limit=20'));
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        if (json['success'] == true && json['data'] != null) {
+        if (json['results'] != null) {
           setState(() {
-            _searchResults = json['data']['results'] as List? ?? [];
+            _searchResults = json['results'] as List? ?? [];
             _isLoading = false;
           });
           return;
@@ -731,167 +859,185 @@ class _MusicSearchSheetState extends State<_MusicSearchSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: MediaQuery.of(context).size.height * 0.85,
       padding: EdgeInsets.only(
         top: 24,
-        left: 24,
-        right: 24,
+        left: 20,
+        right: 20,
         bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: const BoxDecoration(
-        color: LoveSnapsColors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      decoration: BoxDecoration(
+        color: LoveSnapsColors.background.withValues(alpha: 0.95),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: Container(
-              width: 48,
-              height: 6,
+              width: 40,
+              height: 5,
               decoration: BoxDecoration(
-                color: LoveSnapsColors.outlineVariant,
+                color: Colors.grey[400],
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            '🎵 Find your Music Jam',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            '🎵 Find your Jam',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: LoveSnapsColors.primary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
                 ),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: _search,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search_rounded, color: LoveSnapsColors.primary),
-                    hintText: 'Search songs on JioSaavn...',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: LoveSnapsColors.pinkAccent,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+          // Premium Search Bar
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
+            ),
+            child: TextField(
+              controller: _searchController,
+              textInputAction: TextInputAction.search,
+              onSubmitted: _search,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search_rounded, color: LoveSnapsColors.primary),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.arrow_circle_right, color: LoveSnapsColors.pinkAccent, size: 28),
                   onPressed: () => _search(_searchController.text),
                 ),
+                hintText: 'Search songs, artists...',
+                hintStyle: TextStyle(color: Colors.grey[400], fontWeight: FontWeight.normal),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 24),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: LoveSnapsColors.pinkAccent))
                 : _errorMessage.isNotEmpty
                     ? Center(child: Text(_errorMessage, style: const TextStyle(color: Colors.grey)))
                     : _searchResults.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('🔍', style: TextStyle(fontSize: 40)),
-                                SizedBox(height: 12),
+                                Icon(Icons.music_note_rounded, size: 80, color: Colors.grey[300]),
+                                const SizedBox(height: 16),
                                 Text(
-                                  'Search for your favorite songs\nand share it with your partner!',
+                                  'Search for a track to play\nor add to the queue',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Colors.grey[500], fontSize: 16, fontWeight: FontWeight.w500),
                                 ),
                               ],
-                            ),
+                            ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
                           )
-                        : ListView.builder(
+                        : ListView.separated(
                             itemCount: _searchResults.length,
+                            separatorBuilder: (context, index) => const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final song = _searchResults[index];
-                              final songName = song['name'] ?? 'Unknown Song';
+                              final songName = song['trackName'] ?? 'Unknown Song';
+                              final artistName = song['artistName'] ?? 'Unknown Artist';
                               
-                              String artistName = 'Unknown Artist';
-                              if (song['artists'] != null && song['artists']['primary'] != null) {
-                                final primaryList = song['artists']['primary'] as List;
-                                if (primaryList.isNotEmpty) {
-                                  artistName = primaryList.map((a) => a['name']).join(', ');
-                                }
+                              // Upgrade iTunes 100x100 to 600x600 for HD art
+                              String? artworkUrl = song['artworkUrl100'] as String?;
+                              if (artworkUrl != null) {
+                                artworkUrl = artworkUrl.replaceAll('100x100bb', '600x600bb');
                               }
+                              final downloadUrl = song['previewUrl'] as String?;
 
-                              String? artworkUrl;
-                              final images = song['image'] as List?;
-                              if (images != null && images.isNotEmpty) {
-                                artworkUrl = images.last['url'] as String?;
-                              }
-
-                              String? downloadUrl;
-                              final dlUrls = song['downloadUrl'] as List?;
-                              if (dlUrls != null && dlUrls.isNotEmpty) {
-                                final preferred = dlUrls.firstWhere((url) => (url['quality'] as String).contains('160'), orElse: () => dlUrls.last);
-                                downloadUrl = preferred['url'] as String?;
-                              }
-
-                              return Card(
-                                elevation: 0,
-                                margin: const EdgeInsets.only(bottom: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                color: Colors.white,
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  leading: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: artworkUrl != null
-                                        ? Image.network(
-                                            artworkUrl,
-                                            width: 48,
-                                            height: 48,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) => Container(
-                                              width: 48,
-                                              height: 48,
-                                              color: LoveSnapsColors.primaryContainer,
-                                              child: const Icon(Icons.music_note_rounded),
-                                            ),
-                                          )
-                                        : Container(
-                                            width: 48,
-                                            height: 48,
-                                            color: LoveSnapsColors.primaryContainer,
-                                            child: const Icon(Icons.music_note_rounded),
-                                          ),
-                                  ),
-                                  title: Text(
-                                    songName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle: Text(
-                                    artistName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                                  ),
-                                  trailing: const Icon(Icons.chevron_right_rounded, color: LoveSnapsColors.pinkAccent),
+                              return Material(
+                                color: Colors.transparent,
+                                child: InkWell(
                                   onTap: () {
                                     widget.onSelectSong(songName, artistName, artworkUrl, downloadUrl);
                                   },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.02),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        )
+                                      ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Album Art
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: artworkUrl != null
+                                              ? Image.network(
+                                                  artworkUrl,
+                                                  width: 64,
+                                                  height: 64,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (_, __, ___) => _buildFallbackIcon(),
+                                                )
+                                              : _buildFallbackIcon(),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        // Song Info
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                songName,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                artistName,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: LoveSnapsColors.primaryContainer,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(Icons.play_arrow_rounded, color: LoveSnapsColors.primary, size: 20),
+                                        )
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              );
+                              ).animate().fadeIn(delay: Duration(milliseconds: 50 * index)).slideX(begin: 0.1);
                             },
                           ),
           ),
@@ -899,4 +1045,14 @@ class _MusicSearchSheetState extends State<_MusicSearchSheet> {
       ),
     );
   }
+
+  Widget _buildFallbackIcon() {
+    return Container(
+      width: 64,
+      height: 64,
+      color: Colors.grey[200],
+      child: const Icon(Icons.music_note_rounded, color: Colors.grey),
+    );
+  }
 }
+

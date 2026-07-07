@@ -7,6 +7,7 @@ class SnapModel extends Equatable {
   final String senderId;
   final String caption;
   final DateTime timestamp;
+  final Map<String, String> reactions; // map of uid -> emoji
 
   const SnapModel({
     required this.id,
@@ -14,6 +15,7 @@ class SnapModel extends Equatable {
     required this.senderId,
     required this.caption,
     required this.timestamp,
+    this.reactions = const {},
   });
 
   factory SnapModel.fromFirestore(DocumentSnapshot doc) {
@@ -24,6 +26,9 @@ class SnapModel extends Equatable {
       senderId: data['senderId'] as String? ?? '',
       caption: data['caption'] as String? ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      reactions: data['reactions'] != null 
+          ? Map<String, String>.from(data['reactions'] as Map)
+          : {},
     );
   }
 
@@ -33,9 +38,10 @@ class SnapModel extends Equatable {
       'senderId': senderId,
       'caption': caption,
       'timestamp': Timestamp.fromDate(timestamp),
+      'reactions': reactions,
     };
   }
 
   @override
-  List<Object?> get props => [id, imageUrl, senderId, caption, timestamp];
+  List<Object?> get props => [id, imageUrl, senderId, caption, timestamp, reactions];
 }

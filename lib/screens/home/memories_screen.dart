@@ -405,49 +405,109 @@ class SwipeableMemoriesViewerState extends State<SwipeableMemoriesViewer> {
             bottom: 48,
             left: 24,
             right: 24,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Display current reactions floating above the card
+                if (widget.snaps[_currentIndex].reactions.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0, right: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: widget.snaps[_currentIndex].reactions.entries
+                          .where((e) => e.value.isNotEmpty)
+                          .map((e) {
+                        return Container(
+                          margin: const EdgeInsets.only(left: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: const [
+                              BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3)),
+                            ],
+                          ),
+                          child: Text(e.value, style: const TextStyle(fontSize: 18)),
+                        );
+                      }).toList(),
+                    ).animate().fadeIn().slideY(begin: 0.5, end: 0),
+                  ),
+
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: LoveSnapsColors.primary,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'Day ${_getDayTogether(widget.snaps[_currentIndex].timestamp, widget.couple.relationshipStartDate)}',
-                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: LoveSnapsColors.primary,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              'Day ${_getDayTogether(widget.snaps[_currentIndex].timestamp, widget.couple.relationshipStartDate)}',
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text(
+                            DateFormat('MMMM d, yyyy · h:mm a').format(widget.snaps[_currentIndex].timestamp),
+                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                          ),
+                        ],
                       ),
-                      Text(
-                        DateFormat('MMMM d, yyyy · h:mm a').format(widget.snaps[_currentIndex].timestamp),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      if (widget.snaps[_currentIndex].caption.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          widget.snaps[_currentIndex].caption,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      // Reaction buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: ['❤️', '😂', '🔥', '🥺', '😍'].map((emoji) {
+                          final hasReacted = widget.snaps[_currentIndex].reactions[widget.myUid] == emoji;
+                          return GestureDetector(
+                            onTap: () {
+                              widget.ref.read(coupleServiceProvider).reactToSnap(
+                                widget.couple.coupleId, 
+                                widget.snaps[_currentIndex].id, 
+                                hasReacted ? '' : emoji // toggle reaction off if already selected
+                              );
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: hasReacted ? LoveSnapsColors.primaryContainer : Colors.transparent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(emoji, style: const TextStyle(fontSize: 24)),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ],
                   ),
-                  if (widget.snaps[_currentIndex].caption.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      widget.snaps[_currentIndex].caption,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

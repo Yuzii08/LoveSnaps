@@ -131,6 +131,21 @@ class CoupleService {
     });
   }
 
+  // ── Snaps & Reactions ──────────────────────────────────────────────────
+  Future<void> reactToSnap(String coupleId, String snapId, String reaction) async {
+    if (AppConstants.useLocalMock) return;
+    
+    // We update the specific snap's reactions map field in Firestore
+    await _db
+        .collection(AppConstants.couplesCollection)
+        .doc(coupleId)
+        .collection('snaps')
+        .doc(snapId)
+        .update({
+          'reactions.${_auth.currentUser!.uid}': reaction,
+        });
+  }
+
   // ── Manual Status ──────────────────────────────────────────────────────
 
   Future<void> setManualStatus(String coupleId, String status) async {

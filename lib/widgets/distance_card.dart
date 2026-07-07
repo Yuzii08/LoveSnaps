@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../core/theme.dart';
 import '../models/couple_model.dart';
 import '../services/location_service.dart';
+import '../screens/home/radar_screen.dart';
 
 class DistanceCard extends ConsumerWidget {
   final CoupleModel couple;
@@ -48,19 +49,40 @@ class DistanceCard extends ConsumerWidget {
         border: Border.all(color: Colors.white, width: 2),
         boxShadow: LoveSnapsShadows.marshmallowShadowCard,
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Background abstract map icon hint
-          Positioned(
-            right: -10,
-            bottom: 0,
-            child: Icon(
-              Icons.location_city_rounded,
-              size: 100,
-              color: LoveSnapsColors.primary.withValues(alpha: 0.04),
-            ),
-          ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(32),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RadarScreen()),
+            );
+          },
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // Background abstract map icon hint
+              Positioned(
+                right: -10,
+                bottom: 0,
+                child: Icon(
+                  Icons.explore_rounded,
+                  size: 100,
+                  color: LoveSnapsColors.primary.withValues(alpha: 0.04),
+                ),
+              ),
+              
+              // Hint text for tapping
+              Positioned(
+                right: 20,
+                top: 20,
+                child: Icon(
+                  Icons.radar_rounded,
+                  color: LoveSnapsColors.primary.withValues(alpha: 0.3),
+                  size: 24,
+                ),
+              ),
           
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,6 +188,8 @@ class DistanceCard extends ConsumerWidget {
             ],
           ),
         ],
+      ),
+        ),
       ),
     );
   }
