@@ -727,7 +727,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (!couple.useManualDistance && myLoc != null && pLoc != null) {
       final d = ref.read(locationServiceProvider).calculateDistance(
-        myLoc.lat, myLoc.lng, pLoc.lat, pLoc.lng,
+        couple, myUid,
       );
       distanceStr = '${d.toStringAsFixed(0)} km';
     }
