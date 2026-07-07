@@ -236,7 +236,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
           value,
           style: const TextStyle(
             fontSize: 22,
-            fontWeight: FontWeight.extrabold,
+            fontWeight: FontWeight.w800,
             color: LoveSnapsColors.primary,
           ),
         ),

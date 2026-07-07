@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -612,19 +613,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         break;
     }
 
-    final wiggleEffect = Animate(
-      onPlay: (controller) => controller.repeat(reverse: true),
-    ).custom(
-      duration: 800.ms,
-      builder: (context, value, child) {
-        final angle = (value - 0.5) * 0.25; // rotation angle
-        return Transform.rotate(
-          angle: angle,
-          child: child,
-        );
-      },
-      child: Text(emoji, style: const TextStyle(fontSize: 64)),
-    );
+    final wiggleEffect = Text(emoji, style: const TextStyle(fontSize: 64))
+      .animate(onPlay: (controller) => controller.repeat(reverse: true))
+      .rotate(duration: 800.ms, begin: -0.03, end: 0.03);
 
     return Container(
       padding: const EdgeInsets.all(16),

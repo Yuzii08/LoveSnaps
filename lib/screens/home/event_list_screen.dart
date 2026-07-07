@@ -280,7 +280,7 @@ class _EventListScreenState extends ConsumerState<EventListScreen> {
                               days <= 0 ? '🎉' : '$days',
                               style: TextStyle(
                                 fontSize: days <= 0 ? 22 : 24,
-                                fontWeight: FontWeight.extrabold,
+                                fontWeight: FontWeight.w800,
                                 color: LoveSnapsColors.pinkAccent,
                               ),
                             ),

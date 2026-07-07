@@ -96,7 +96,7 @@ class NotesJarScreen extends ConsumerWidget {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, bottom: 40),
+                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 40),
                 sliver: SliverGrid(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,

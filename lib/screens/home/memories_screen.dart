@@ -269,8 +269,6 @@ class SwipeableMemoriesViewerState extends State<SwipeableMemoriesViewer> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    _pageController = PageController(initialLocation: widget.initialIndex) as PageController;
-    // Note: standard PageController has initialPage parameter
     _pageController = PageController(initialPage: widget.initialIndex);
   }
 

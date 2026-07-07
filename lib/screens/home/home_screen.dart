@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -397,7 +398,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Text(
                   'Daily Love Prompt',
                   style: TextStyle(
-                    fontWeight: FontWeight.extrabold,
+                    fontWeight: FontWeight.w800,
                     fontSize: 16,
                     color: Colors.amber[900],
                   ),
@@ -474,19 +475,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: 8),
           Text(
             'Both notes unlocked!',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.emerald[900]),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green[900]),
           ),
           const SizedBox(height: 6),
           Text(
             'Taps are locked, check-ins are done! Tap below to open our Notes Jar.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Colors.emerald[700], fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 12, color: Colors.green[700], fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.push('/home/notes-jar'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.emerald[500],
+              backgroundColor: Colors.green[500],
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 44),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
