@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\Users\sambh\.shorebird\bin\cache\flutter\9f9f19aaac8f092532e59f3447c501b4d4089efb"
+export "FLUTTER_ROOT=C:\Users\sambh\flutter"
 export "FLUTTER_APPLICATION_PATH=D:\LoveSnaps"
 export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=D:\LoveSnaps\ios\Flutter\ephemeral\Packages\.packages\FlutterFramework"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
