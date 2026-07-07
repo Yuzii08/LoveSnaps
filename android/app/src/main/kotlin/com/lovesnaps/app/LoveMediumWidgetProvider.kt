@@ -30,6 +30,7 @@ class LoveMediumWidgetProvider : HomeWidgetProvider() {
             val partnerName  = widgetData.getString("partner_name", "Partner") ?: "Partner"
             val atRisk       = widgetData.getBoolean("streak_at_risk", false)
             val missYouRx    = widgetData.getBoolean("miss_you_received", false)
+            val imagePath    = widgetData.getString("latest_snap_path", null)
 
             // ── Bind to views ──────────────────────────────────────────────
             views.setTextViewText(R.id.widget_streak_icon, if (atRisk) "⚠️" else "🔥")
@@ -40,6 +41,19 @@ class LoveMediumWidgetProvider : HomeWidgetProvider() {
                 R.id.widget_miss_you_btn,
                 if (missYouRx) "💌 $partnerName misses you!" else "💕 Miss You"
             )
+
+            // Bind image
+            if (!imagePath.isNullOrEmpty()) {
+                val file = java.io.File(imagePath)
+                if (file.exists()) {
+                    val bitmap = android.graphics.BitmapFactory.decodeFile(file.absolutePath)
+                    views.setImageViewBitmap(R.id.widget_snap_image, bitmap)
+                } else {
+                    views.setImageViewBitmap(R.id.widget_snap_image, null)
+                }
+            } else {
+                views.setImageViewBitmap(R.id.widget_snap_image, null)
+            }
 
             // ── Tap entire widget → open app ──────────────────────────────
             val launchIntent = HomeWidgetLaunchIntent.getActivity(

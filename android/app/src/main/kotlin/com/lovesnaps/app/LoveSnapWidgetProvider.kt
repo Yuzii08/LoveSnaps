@@ -28,6 +28,7 @@ class LoveSnapWidgetProvider : HomeWidgetProvider() {
             val streakCount = widgetData.getInt("streak_count", 0)
             val daysCount   = widgetData.getInt("days_count", 0)
             val atRisk      = widgetData.getBoolean("streak_at_risk", false)
+            val imagePath   = widgetData.getString("latest_snap_path", null)
 
             // ── Bind data to views ─────────────────────────────────────────
             views.setTextViewText(R.id.widget_streak_count, "$streakCount")
@@ -36,6 +37,19 @@ class LoveSnapWidgetProvider : HomeWidgetProvider() {
             // Streak icon: flame normally, warning when at risk
             val streakEmoji = if (atRisk) "⚠️" else "🔥"
             views.setTextViewText(R.id.widget_streak_icon, streakEmoji)
+
+            // Bind image
+            if (!imagePath.isNullOrEmpty()) {
+                val file = java.io.File(imagePath)
+                if (file.exists()) {
+                    val bitmap = android.graphics.BitmapFactory.decodeFile(file.absolutePath)
+                    views.setImageViewBitmap(R.id.widget_snap_image, bitmap)
+                } else {
+                    views.setImageViewBitmap(R.id.widget_snap_image, null)
+                }
+            } else {
+                views.setImageViewBitmap(R.id.widget_snap_image, null)
+            }
 
             // ── Tap action: open app to home screen ───────────────────────
             val launchIntent = HomeWidgetLaunchIntent.getActivity(

@@ -699,7 +699,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _checkIn(CoupleModel couple) async {
     try {
       await ref.read(streakServiceProvider).checkIn(couple.coupleId);
-      _syncWidgets(couple);
+      final snaps = ref.read(snapsStreamProvider).value;
+      _syncWidgets(couple, snaps);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -716,17 +717,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void _syncWidgets(CoupleModel couple) {
+  void _syncWidgets(CoupleModel couple, List<SnapModel>? snaps) {
+    // Determine distance for widgets
+    String distanceStr = '—';
     final myUid = ref.read(authStateProvider).value?.uid ?? '';
-    final locationService = ref.read(locationServiceProvider);
-    final distanceKm = locationService.calculateDistance(couple, myUid);
-    final distanceStr = couple.useManualDistance
-        ? (couple.manualStatus == 'together' ? 'Together 💑' : 'Apart 💌')
-        : locationService.formatDistance(distanceKm);
+    final partnerUid = couple.partnerUid(myUid);
+    final myLoc = couple.latestLocations[myUid];
+    final pLoc = couple.latestLocations[partnerUid];
+
+    if (!couple.useManualDistance && myLoc != null && pLoc != null) {
+      final d = ref.read(locationServiceProvider).calculateDistance(
+        myLoc.lat, myLoc.lng, pLoc.lat, pLoc.lng,
+      );
+      distanceStr = '${d.toStringAsFixed(0)} km';
+    }
 
     final myCheckedIn = couple.hasCheckedIn(myUid);
-    final partnerUid = couple.partnerUid(myUid);
     final partnerCheckedIn = couple.hasCheckedIn(partnerUid);
+    
     final atRisk = ref.read(streakServiceProvider).isStreakAtRisk(
       myCheckedIn: myCheckedIn,
       partnerCheckedIn: partnerCheckedIn,
@@ -735,6 +743,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     const partnerName = 'Partner';
     final missYouReceived = couple.lastMissYouSentBy == partnerUid;
+    
+    String? latestSnapUrl;
+    if (snaps != null && snaps.isNotEmpty) {
+      latestSnapUrl = snaps.first.imageUrl;
+    }
 
     ref.read(widgetServiceProvider).updateWidgets(
       coupleId: couple.coupleId,
@@ -745,6 +758,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       manualStatus: couple.manualStatus,
       streakAtRisk: atRisk,
       missYouReceived: missYouReceived,
+      latestSnapUrl: latestSnapUrl,
     );
   }
 
@@ -778,8 +792,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             );
           }
 
-          WidgetsBinding.instance.addPostFrameCallback((_) => _syncWidgets(couple));
           final snapsAsync = ref.watch(snapsStreamProvider);
+          WidgetsBinding.instance.addPostFrameCallback((_) => _syncWidgets(couple, snapsAsync.value));
           final notesAsync = ref.watch(notesStreamProvider);
           final notes = notesAsync.value ?? [];
 

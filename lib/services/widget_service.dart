@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import '../core/constants.dart';
 
@@ -24,9 +28,36 @@ class WidgetService {
     required String manualStatus,  // 'together' | 'apart'
     required bool streakAtRisk,
     required bool missYouReceived,
+    String? latestSnapUrl,
   }) async {
     if (kIsWeb) return;
     try {
+      // Handle Image Download
+      if (latestSnapUrl != null && latestSnapUrl.isNotEmpty) {
+        try {
+          final dir = await getApplicationDocumentsDirectory();
+          final file = File('${dir.path}/latest_snap_widget.jpg');
+          
+          if (latestSnapUrl.startsWith('http')) {
+            final response = await http.get(Uri.parse(latestSnapUrl));
+            if (response.statusCode == 200) {
+              await file.writeAsBytes(response.bodyBytes);
+              await HomeWidget.saveWidgetData<String>('latest_snap_path', file.path);
+            }
+          } else if (latestSnapUrl.startsWith('data:image')) {
+            final b64 = latestSnapUrl.split(',').last;
+            final bytes = base64Decode(b64);
+            await file.writeAsBytes(bytes);
+            await HomeWidget.saveWidgetData<String>('latest_snap_path', file.path);
+          }
+        } catch (imgErr) {
+          debugPrint('Failed to save snap image for widget: $imgErr');
+        }
+      } else {
+        // Clear if no snap
+        await HomeWidget.saveWidgetData<String>('latest_snap_path', '');
+      }
+
       await Future.wait([
         HomeWidget.saveWidgetData<String>('couple_id', coupleId),
         HomeWidget.saveWidgetData<int>(
