@@ -11,89 +11,75 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
+    <!-- Gradient overlays -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#33000000"
+        android:layout_gravity="top" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#33000000"
+        android:layout_gravity="bottom" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:background="#70000000"
+        android:orientation="vertical"
         android:padding="12dp"
-        android:gravity="center_vertical"
-        android:clickable="true"
-        android:focusable="true">
+        android:gravity="top|start">
 
         <!-- Streak section -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:background="@drawable/widget_pill_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/widget_streak_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔥"
-                android:textSize="24sp" />
+                android:textSize="16sp"
+                android:layout_marginEnd="4dp" />
 
             <TextView
                 android:id="@+id/widget_streak_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="22sp"
+                android:text="0 days"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="streak"
-                android:textSize="10sp"
-                android:textColor="#DDDDDD" />
-
         </LinearLayout>
-
-        <!-- Divider -->
-        <FrameLayout
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#40FFFFFF"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" />
 
         <!-- Days Together section -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:background="@drawable/widget_pill_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💕"
-                android:textSize="20sp" />
+                android:text="💕 "
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/widget_days_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Day 0"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="together"
-                android:textSize="10sp"
-                android:textColor="#DDDDDD" />
-
         </LinearLayout>
-
     </LinearLayout>
 
 </FrameLayout>

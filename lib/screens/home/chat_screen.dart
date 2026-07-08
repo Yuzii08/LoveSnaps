@@ -377,7 +377,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
               // Input Bar & Drawer Toggles
               Container(
-                padding: EdgeInsets.fromLTRB(16, 4, 16, MediaQuery.of(context).viewInsets.bottom + 16),
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [

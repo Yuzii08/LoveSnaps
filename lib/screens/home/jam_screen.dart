@@ -117,7 +117,7 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
     _isSyncingFromServer = true;
 
     try {
-      // 1. Load song source if different
+      // 1. Load song source if different (For both sender and receiver)
       if (_loadedUrl != downloadUrl) {
         _loadedUrl = downloadUrl;
         await _player.setAudioSource(
@@ -135,7 +135,10 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
         );
       }
 
-      // 2. Play / Pause Sync
+      // 2. Play / Pause Sync (ONLY for receiver)
+      if (couple.currentJamSharedBy == myUid) {
+        return; // Sender controls playback locally, no need to sync from Firestore
+      }
       final shouldBePlaying = couple.currentJamPlaying;
       if (shouldBePlaying && !_player.playing) {
         // Calculate elapsed offset since last database update
@@ -293,8 +296,8 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
       data: (couple) {
         if (couple == null) return const Center(child: Text('Pair first to jam!'));
 
-        // Reactively sync playback state if we are NOT the active sender
-        if (_isJoinedJam && couple.currentJamSharedBy != myUid) {
+        // Reactively sync playback state for everyone (loads URL if needed, syncs if receiver)
+        if (_isJoinedJam) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _syncFirestoreToLocalPlayer(couple, myUid);
           });
@@ -317,473 +320,343 @@ class _JamScreenState extends ConsumerState<JamScreen> with SingleTickerProvider
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
+            leading: IconButton(
+              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 32),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(
+              _isJoinedJam ? 'PLAYING FROM JAM' : 'SOLO SESSION',
+              style: const TextStyle(
+                color: Colors.white, 
+                fontSize: 10, 
+                fontWeight: FontWeight.bold, 
+                letterSpacing: 1.5,
+              ),
+            ),
+            centerTitle: true,
             actions: [
               IconButton(
-                onPressed: _showUpdateJamBottomSheet,
-                icon: const Icon(Icons.search_rounded, color: Colors.white),
-                tooltip: 'Search Music',
+                icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+                onPressed: _showUpdateJamBottomSheet, // Search music / options
               ),
-              const SizedBox(width: 8),
             ],
           ),
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Dynamic Blurred Background
-              if (imageUrl != null && imageUrl.isNotEmpty)
-                Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: Colors.grey[900]),
-                )
-              else
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF2C3E50), Color(0xFF000000)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-              // Glassmorphism Overlay
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 40.0, sigmaY: 40.0),
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF4A4A4A), // Dark grey
+                  Colors.black,
+                  Colors.black,
+                ],
+                stops: [0.0, 0.4, 1.0],
               ),
-              
-              // Main Content
-              SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Column(
-                    children: [
-                      // Mode Toggle
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 24),
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                if (!_isJoinedJam) {
-                                  setState(() {
-                                    _isJoinedJam = true;
-                                    _loadedUrl = null; // force reload of jam url
-                                  });
-                                }
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: _isJoinedJam ? Colors.white : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(26),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.favorite_rounded, size: 16, color: _isJoinedJam ? Colors.pink : Colors.white70),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Join Jam',
-                                      style: TextStyle(
-                                        color: _isJoinedJam ? Colors.black : Colors.white70,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    // Album Art
+                    Expanded(
+                      flex: 5,
+                      child: Center(
+                        child: Hero(
+                          tag: 'jam_album_art',
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: (imageUrl != null && imageUrl.isNotEmpty)
+                                  ? Image.network(
+                                      imageUrl, 
+                                      fit: BoxFit.cover, 
+                                      errorBuilder: (_, __, ___) => _buildFallbackArt(),
+                                    )
+                                  : _buildFallbackArt(),
                             ),
-                            GestureDetector(
-                              onTap: () async {
-                                if (_isJoinedJam) {
-                                  // Stop current jam playback before going solo
-                                  await _player.stop();
-                                  setState(() {
-                                    _isJoinedJam = false;
-                                  });
-                                }
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: !_isJoinedJam ? Colors.white : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(26),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.headphones_rounded, size: 16, color: !_isJoinedJam ? Colors.black : Colors.white70),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Solo',
-                                      style: TextStyle(
-                                        color: !_isJoinedJam ? Colors.black : Colors.white70,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                      
-                      // Large Album Art
-                      Hero(
-                        tag: 'jam_album_art',
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Shared by text
+                    if (hasJam)
+                      Align(
+                        alignment: Alignment.centerLeft,
                         child: Container(
-                          width: MediaQuery.of(context).size.width * 0.85,
-                          height: MediaQuery.of(context).size.width * 0.85,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(32),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.5),
-                                blurRadius: 40,
-                                offset: const Offset(0, 20),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(32),
-                            child: (imageUrl != null && imageUrl.isNotEmpty)
-                                ? Image.network(
-                                    imageUrl,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => _buildFallbackArt(),
-                                  )
-                                : _buildFallbackArt(),
-                          ),
-                        ),
-                      ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.95, 0.95)),
-
-                      const SizedBox(height: 48),
-
-                      // Song Info
-                      if (hasJam) ...[
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
-                        
-                        const SizedBox(height: 8),
-                        
-                        Text(
-                          artist,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2, end: 0),
-                        
-                        const SizedBox(height: 16),
-                        
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.headphones_rounded, color: Colors.white70, size: 14),
+                              const Icon(Icons.headphones_rounded, color: Colors.white, size: 12),
                               const SizedBox(width: 6),
                               Text(
-                                '$sharedByName shared this jam',
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                'Shared by $sharedByName',
+                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
-                        ).animate().fadeIn(delay: 400.ms),
+                        ),
+                      ),
 
-                        const SizedBox(height: 32),
-
-                        // Progress Slider
-                        StreamBuilder<Duration>(
-                          stream: _player.positionStream,
-                          builder: (context, snapshot) {
-                            final position = snapshot.data ?? Duration.zero;
-                            final duration = _player.duration ?? Duration.zero;
-                            return Column(
+                    // Song Info Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title.isNotEmpty ? title : 'No Song Playing',
+                                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                artist.isNotEmpty ? artist : 'Tap the + to search',
+                                style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w500),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Mode Toggle Heart
+                        GestureDetector(
+                          onTap: () async {
+                            if (_isJoinedJam) {
+                              await _player.stop();
+                              setState(() => _isJoinedJam = false);
+                            } else {
+                              setState(() {
+                                _isJoinedJam = true;
+                                _loadedUrl = null;
+                              });
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 4, left: 16),
+                            child: Icon(
+                              _isJoinedJam ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              color: _isJoinedJam ? Colors.greenAccent : Colors.white70,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Progress Bar
+                    StreamBuilder<Duration>(
+                      stream: _player.positionStream,
+                      builder: (context, snapshot) {
+                        final position = snapshot.data ?? Duration.zero;
+                        final duration = _player.duration ?? Duration.zero;
+                        final progress = duration.inMilliseconds > 0 
+                            ? position.inMilliseconds.toDouble() / duration.inMilliseconds.toDouble()
+                            : 0.0;
+                            
+                        return Column(
+                          children: [
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                trackHeight: 3,
+                                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
+                                overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
+                                activeTrackColor: Colors.white,
+                                inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
+                                thumbColor: Colors.white,
+                              ),
+                              child: Slider(
+                                value: position.inMilliseconds.toDouble().clamp(0.0, duration.inMilliseconds > 0 ? duration.inMilliseconds.toDouble() : 1.0),
+                                min: 0.0,
+                                max: duration.inMilliseconds > 0 ? duration.inMilliseconds.toDouble() : 1.0,
+                                onChanged: (val) {
+                                  _player.seek(Duration(milliseconds: val.toInt()));
+                                },
+                                onChangeEnd: (val) {
+                                  _syncLocalPlaybackToFirestore();
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    trackHeight: 4,
-                                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-                                    activeTrackColor: Colors.white,
-                                    inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
-                                    thumbColor: Colors.white,
-                                  ),
-                                  child: Slider(
-                                    value: position.inMilliseconds.toDouble().clamp(0.0, duration.inMilliseconds > 0 ? duration.inMilliseconds.toDouble() : 1.0),
-                                    min: 0.0,
-                                    max: duration.inMilliseconds > 0 ? duration.inMilliseconds.toDouble() : 1.0,
-                                    onChanged: (val) {
-                                      _player.seek(Duration(milliseconds: val.toInt()));
-                                    },
-                                    onChangeEnd: (val) {
-                                      _syncLocalPlaybackToFirestore();
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(_formatDuration(position), style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                                      Text(_formatDuration(duration), style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                                    ],
-                                  ),
-                                ),
+                                Text(_formatDuration(position), style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12, fontWeight: FontWeight.w500)),
+                                Text(_formatDuration(duration), style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12, fontWeight: FontWeight.w500)),
                               ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    // Controls
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.shuffle_rounded), 
+                          color: Colors.white54, 
+                          iconSize: 24,
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.skip_previous_rounded), 
+                          color: Colors.white, 
+                          iconSize: 36, 
+                          onPressed: () {
+                            if (_player.position.inSeconds > 3) {
+                              _player.seek(Duration.zero);
+                              _syncLocalPlaybackToFirestore();
+                            }
+                          },
+                        ),
+                        // Play button
+                        StreamBuilder<PlayerState>(
+                          stream: _player.playerStateStream,
+                          builder: (context, snapshot) {
+                            final playing = snapshot.data?.playing ?? false;
+                            final processingState = snapshot.data?.processingState;
+                            final isBuffering = processingState == ProcessingState.loading || processingState == ProcessingState.buffering;
+
+                            return Container(
+                              width: 64,
+                              height: 64,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              child: IconButton(
+                                onPressed: () async {
+                                  if (playing) {
+                                    await _player.pause();
+                                    if (_isJoinedJam) {
+                                      await ref.read(coupleServiceProvider).updateJamPlayback(
+                                        couple.coupleId,
+                                        playing: false,
+                                        positionMs: _player.position.inMilliseconds,
+                                      );
+                                    }
+                                  } else {
+                                    if (_loadedUrl != couple.currentJamDownloadUrl && _isJoinedJam && couple.currentJamDownloadUrl != null) {
+                                      _loadedUrl = couple.currentJamDownloadUrl;
+                                      await _player.setAudioSource(
+                                        AudioSource.uri(
+                                          Uri.parse(couple.currentJamDownloadUrl!),
+                                          tag: MediaItem(
+                                            id: couple.currentJamDownloadUrl!,
+                                            title: couple.currentJamTitle ?? 'LoveSnaps Jam',
+                                            artist: couple.currentJamArtist ?? 'Partner',
+                                            artUri: (couple.currentJamImageUrl != null && couple.currentJamImageUrl!.isNotEmpty)
+                                                ? Uri.tryParse(couple.currentJamImageUrl!)
+                                                : null,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    await _player.play();
+                                    if (_isJoinedJam) {
+                                      await ref.read(coupleServiceProvider).updateJamPlayback(
+                                        couple.coupleId,
+                                        playing: true,
+                                        positionMs: _player.position.inMilliseconds,
+                                      );
+                                    }
+                                  }
+                                },
+                                icon: isBuffering 
+                                  ? const CircularProgressIndicator(color: Colors.black, strokeWidth: 3)
+                                  : Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
+                                color: Colors.black,
+                                iconSize: 32,
+                              ),
                             );
                           },
-                        ).animate().fadeIn(delay: 500.ms),
-
-                        const SizedBox(height: 16),
-
-                        // Media Controls Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.skip_next_rounded), 
+                          color: couple.jamQueue.isNotEmpty ? Colors.white : Colors.white30, 
+                          iconSize: 36, 
+                          onPressed: couple.jamQueue.isNotEmpty ? _skipNext : null,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.repeat_rounded), 
+                          color: Colors.white54, 
+                          iconSize: 24,
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Bottom Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.devices_rounded), 
+                          color: _isJoinedJam ? Colors.greenAccent : Colors.white70, 
+                          tooltip: 'Jam Devices',
+                          onPressed: () {},
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.share_outlined), 
+                          color: Colors.white70, 
+                          onPressed: () {},
+                        ),
+                        Stack(
                           children: [
                             IconButton(
-                              onPressed: _showUpdateJamBottomSheet,
-                              icon: const Icon(Icons.add_rounded),
-                              color: Colors.white,
-                              iconSize: 32,
-                            ),
-                            const SizedBox(width: 24),
-                            StreamBuilder<PlayerState>(
-                              stream: _player.playerStateStream,
-                              builder: (context, snapshot) {
-                                final playing = snapshot.data?.playing ?? false;
-                                final processingState = snapshot.data?.processingState;
-                                final isBuffering = processingState == ProcessingState.loading || processingState == ProcessingState.buffering;
-
-                                return Container(
-                                  width: 80,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.white.withValues(alpha: 0.2),
-                                        blurRadius: 20,
-                                        spreadRadius: 5,
-                                      ),
-                                    ],
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () async {
-                                      if (playing) {
-                                        await _player.pause();
-                                        if (_isJoinedJam) {
-                                          await ref.read(coupleServiceProvider).updateJamPlayback(
-                                            couple.coupleId,
-                                            playing: false,
-                                            positionMs: _player.position.inMilliseconds,
-                                          );
-                                        }
-                                      } else {
-                                        if (_player.audioSource == null && _isJoinedJam && couple.currentJamDownloadUrl != null) {
-                                          await _player.setAudioSource(
-                                            AudioSource.uri(
-                                              Uri.parse(couple.currentJamDownloadUrl!),
-                                              tag: MediaItem(
-                                                id: couple.currentJamDownloadUrl!,
-                                                title: couple.currentJamTitle ?? 'LoveSnaps Jam',
-                                                artist: couple.currentJamArtist ?? 'Partner',
-                                                artUri: (couple.currentJamImageUrl != null && couple.currentJamImageUrl!.isNotEmpty)
-                                                    ? Uri.tryParse(couple.currentJamImageUrl!)
-                                                    : null,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                        await _player.play();
-                                        if (_isJoinedJam) {
-                                          await ref.read(coupleServiceProvider).updateJamPlayback(
-                                            couple.coupleId,
-                                            playing: true,
-                                            positionMs: _player.position.inMilliseconds,
-                                          );
-                                        }
-                                      }
-                                    },
-                                    icon: isBuffering 
-                                      ? const CircularProgressIndicator(color: Colors.black)
-                                      : Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
-                                    color: Colors.black,
-                                    iconSize: 40,
-                                  ),
-                                );
+                              icon: const Icon(Icons.queue_music_rounded), 
+                              color: Colors.white70, 
+                              onPressed: () {
+                                _addToQueue();
                               },
                             ),
-                            const SizedBox(width: 24),
-                            IconButton(
-                              onPressed: couple.jamQueue.isNotEmpty ? _skipNext : null,
-                              icon: const Icon(Icons.skip_next_rounded),
-                              color: couple.jamQueue.isNotEmpty ? Colors.white : Colors.white30,
-                              iconSize: 40,
-                            ),
-                          ],
-                        ).animate().fadeIn(delay: 600.ms),
-                      ] else ...[
-                        Text(
-                          'No Jam Active',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ).animate().fadeIn().slideY(),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Tap below to search and share music.',
-                          style: TextStyle(color: Colors.white70),
-                        ).animate().fadeIn(),
-                        const SizedBox(height: 32),
-                        ElevatedButton.icon(
-                          onPressed: _showUpdateJamBottomSheet,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            minimumSize: const Size(200, 56),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                          ),
-                          icon: const Icon(Icons.search_rounded),
-                          label: const Text('SEARCH MUSIC', style: TextStyle(fontWeight: FontWeight.bold)),
-                        ).animate().fadeIn().scale(),
-                      ],
-
-                      const SizedBox(height: 48),
-
-                      // Queue Section (Glassmorphism)
-                      if (hasJam || couple.jamQueue.isNotEmpty) ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Up Next',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-                            ),
-                            Row(
-                              children: [
-                                if (couple.jamQueue.isNotEmpty)
-                                  TextButton(
-                                    onPressed: _clearQueue,
-                                    child: const Text('Clear', style: TextStyle(color: Colors.white54)),
+                            if (couple.jamQueue.isNotEmpty)
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.greenAccent,
+                                    shape: BoxShape.circle,
                                   ),
-                                IconButton(
-                                  icon: const Icon(Icons.queue_music_rounded, color: Colors.white),
-                                  onPressed: _addToQueue,
+                                  child: Text(
+                                    '${couple.jamQueue.length}',
+                                    style: const TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        
-                        if (couple.jamQueue.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-                            ),
-                            child: const Column(
-                              children: [
-                                Icon(Icons.music_note_rounded, color: Colors.white54, size: 32),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Queue is empty. Tap the + icon to add.',
-                                  style: TextStyle(color: Colors.white70, fontSize: 13),
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          ListView.builder(
-                            shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: couple.jamQueue.length,
-                            itemBuilder: (context, index) {
-                              final qItem = couple.jamQueue[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                                ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  leading: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: qItem['imageUrl'] != null && qItem['imageUrl'].isNotEmpty
-                                        ? Image.network(qItem['imageUrl'], width: 48, height: 48, fit: BoxFit.cover)
-                                        : Container(
-                                            width: 48, 
-                                            height: 48, 
-                                            color: Colors.white24,
-                                            child: const Icon(Icons.music_note, color: Colors.white),
-                                          ),
-                                  ),
-                                  title: Text(
-                                    qItem['title'] ?? 'Song',
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subtitle: Text(
-                                    qItem['artist'] ?? 'Artist',
-                                    style: const TextStyle(fontSize: 13, color: Colors.white70),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  trailing: index == 0
-                                      ? const Icon(Icons.play_circle_outline_rounded, color: Colors.white)
-                                      : null,
-                                ),
-                              );
-                            },
-                          ),
                       ],
-                      const SizedBox(height: 60),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         );
       },

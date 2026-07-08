@@ -16,6 +16,7 @@ import 'screens/home/mood_history_screen.dart';
 import 'screens/home/event_list_screen.dart';
 import 'screens/home/stats_screen.dart';
 import 'models/couple_model.dart';
+import 'services/notification_service.dart';
 
 // ── Router ─────────────────────────────────────────────────────────────────
 
@@ -85,11 +86,25 @@ final _router = GoRouter(
 
 // ── App ────────────────────────────────────────────────────────────────────
 
-class LoveSnapsApp extends ConsumerWidget {
+class LoveSnapsApp extends ConsumerStatefulWidget {
   const LoveSnapsApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoveSnapsApp> createState() => _LoveSnapsAppState();
+}
+
+class _LoveSnapsAppState extends ConsumerState<LoveSnapsApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize notifications early when the app starts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationServiceProvider).initialize();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'LoveSnaps',
       debugShowCheckedModeBanner: false,

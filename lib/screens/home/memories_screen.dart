@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../core/theme.dart';
 import '../../models/snap_model.dart';
@@ -147,86 +149,86 @@ class MemoriesScreen extends ConsumerWidget {
 
             return SliverPadding(
               padding: const EdgeInsets.all(24),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.72,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final snap = snaps[index];
-                    final double rotation = (index % 2 == 0 ? 0.02 : -0.02) * (index % 3 + 1);
-                    final dayCount = _getDayTogether(snap.timestamp, couple.relationshipStartDate);
+              sliver: SliverMasonryGrid.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childCount: snaps.length,
+                itemBuilder: (context, index) {
+                  final snap = snaps[index];
+                  // Alternate rotation and random-ish heights to make it look scattered
+                  final double rotation = (index % 2 == 0 ? 0.02 : -0.02) * (index % 3 + 1);
+                  final dayCount = _getDayTogether(snap.timestamp, couple.relationshipStartDate);
+                  
+                  // Vary image aspect ratio slightly for masonry effect
+                  final double imageAspectRatio = index % 3 == 0 ? 0.8 : (index % 2 == 0 ? 1.0 : 1.2);
 
-                    return Transform.rotate(
-                      angle: rotation,
-                      child: GestureDetector(
-                        onTap: () => _openSwipeableFullImage(context, ref, snaps, index, myUid, couple),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: LoveSnapsShadows.marshmallowShadowCard,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Hero(
-                                    tag: 'polaroid_${snap.id}',
-                                    child: _buildImageWidget(snap.imageUrl),
-                                  ),
+                  return Transform.rotate(
+                    angle: rotation,
+                    child: GestureDetector(
+                      onTap: () => _openSwipeableFullImage(context, ref, snaps, index, myUid, couple),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: LoveSnapsShadows.marshmallowShadowCard,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: imageAspectRatio,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Hero(
+                                  tag: 'polaroid_${snap.id}',
+                                  child: _buildImageWidget(snap.imageUrl),
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: LoveSnapsColors.primaryContainer,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'Day $dayCount together',
-                                  style: const TextStyle(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w800,
-                                    color: LoveSnapsColors.onPrimaryContainer,
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: LoveSnapsColors.primaryContainer,
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                snap.caption.isNotEmpty ? snap.caption : 'Memory 💕',
+                              child: Text(
+                                'Day $dayCount together',
                                 style: const TextStyle(
-                                  fontFamily: 'Quicksand',
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                DateFormat('MMM d, yyyy').format(snap.timestamp),
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.black38,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: LoveSnapsColors.onPrimaryContainer,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              snap.caption.isNotEmpty ? snap.caption : 'Memory 💕',
+                              style: const TextStyle(
+                                fontFamily: 'Quicksand',
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              DateFormat('MMM d, yyyy').format(snap.timestamp),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.black38,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ).animate().fadeIn(duration: 400.ms, delay: (index * 50).ms);
-                  },
-                  childCount: snaps.length,
-                ),
+                    ),
+                  ).animate().fadeIn(duration: 400.ms, delay: (index * 50).ms);
+                },
               ),
             );
           },
